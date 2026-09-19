@@ -70,17 +70,22 @@ export function DecisionDetailView({ entry, onBack }) {
       <CorrelationStrip directive={directive} ticket={ticket} />
 
       <div className="decision-rail">
-        <RequestStage request={entry.scenario.request} />
-        <RailConnector />
-        <PreMatrixStage trace={trace} />
-        <RailConnector />
-        <MatrixStage matrixRow={diagnostics.matrix_row} reached={matrixReached} />
-        <RailConnector />
-        <DirectiveStage directive={directive} />
+        <div className="rail-row">
+          <RequestStage request={entry.scenario.request} />
+          <RailConnector />
+          <PreMatrixStage trace={trace} />
+        </div>
+        <div className="rail-row rail-row--wide-first">
+          <MatrixStage matrixRow={diagnostics.matrix_row} reached={matrixReached} />
+          <RailConnector />
+          <DirectiveStage directive={directive} />
+        </div>
         <BoundaryDivider />
-        <FabricStage directive={directive} fabric={fabric} callerId={callerId} />
-        <RailConnector />
-        <OutcomeStage outcome={outcome} />
+        <div className="rail-row rail-row--wide-first">
+          <FabricStage directive={directive} fabric={fabric} callerId={callerId} />
+          <RailConnector />
+          <OutcomeStage outcome={outcome} />
+        </div>
       </div>
 
       <RerunPanel
