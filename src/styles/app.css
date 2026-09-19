@@ -2,6 +2,10 @@
 @import './base.css';
 @import './decisions.css';
 @import './detail.css';
+@import './advisor.css';
+@import './matrix.css';
+@import './policies.css';
+@import './boundary.css';
 
 /* Guard against horizontal page scroll on small phones (375px). */
 html,

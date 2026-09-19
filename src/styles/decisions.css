@@ -66,12 +66,22 @@
 
 .decisions-table-wrap {
   overflow-x: auto;
+  min-width: 0;
 }
 
 .decisions-table {
   width: 100%;
+  min-width: 0;
   border-collapse: collapse;
   font-size: 0.9rem;
+}
+
+/* The title column gets the flexible width; every other column is a short,
+   fixed-vocabulary value that should stay on one line. Nothing is clipped —
+   `.decisions-table-wrap` scrolls horizontally on its own if a row is
+   genuinely wider than the panel, so the page itself never does. */
+.decisions-table__col--title {
+  width: 100%;
 }
 
 .decisions-table th {
@@ -87,6 +97,14 @@
   padding: var(--space-3);
   border-bottom: 1px solid var(--color-border);
   vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* The title column is the one place wrapping is correct: the scenario title
+   is prose, not a short fixed-vocabulary value. */
+.decisions-table__title-cell {
+  white-space: normal;
+  min-width: 16rem;
 }
 
 .decisions-table tbody tr {

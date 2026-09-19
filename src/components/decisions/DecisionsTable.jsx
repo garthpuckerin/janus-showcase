@@ -1,5 +1,5 @@
 import { DirectiveChip } from '../common/DirectiveChip.jsx';
-import { policyRefLabel, relativeTimeFromNow } from '../../utils/format.js';
+import { policyRefLabel, relativeTimeFromNow, modelStatusLabel } from '../../utils/format.js';
 
 function fabricSummary(entry) {
   if (!entry.fabric) return { text: 'Not applicable', ariaLabel: 'not applicable', className: 'not-applicable' };
@@ -13,10 +13,21 @@ export function DecisionsTable({ rows, now, onSelectScenario }) {
   return (
     <div className="panel decisions-table-wrap">
       <table className="decisions-table">
+        <caption className="visually-hidden">Decision ledger: one row per evaluated request.</caption>
+        <colgroup>
+          <col />
+          <col className="decisions-table__col--title" />
+          <col />
+          <col />
+          <col />
+          <col />
+          <col />
+          <col />
+        </colgroup>
         <thead>
           <tr>
             <th scope="col">When</th>
-            <th scope="col">Decision</th>
+            <th scope="col" className="decisions-table__title-col">Decision</th>
             <th scope="col">Persona policy</th>
             <th scope="col">Event</th>
             <th scope="col">Directive</th>
@@ -32,7 +43,7 @@ export function DecisionsTable({ rows, now, onSelectScenario }) {
             return (
               <tr key={scenario.id} onClick={() => onSelectScenario(scenario.id)}>
                 <td data-label="When">{relativeTimeFromNow(scenario.occurredAt, now)}</td>
-                <td data-label="Decision">
+                <td data-label="Decision" className="decisions-table__title-cell">
                   <button
                     type="button"
                     className="decisions-table__row-button"
@@ -54,7 +65,9 @@ export function DecisionsTable({ rows, now, onSelectScenario }) {
                     {evaluation.diagnostics.matrix_row === null ? 'pre-matrix' : `row ${evaluation.diagnostics.matrix_row}`}
                   </span>
                 </td>
-                <td data-label="Model">{evaluation.diagnostics.model_status}</td>
+                <td data-label="Model" title={evaluation.diagnostics.model_status}>
+                  {modelStatusLabel(evaluation.diagnostics.model_status)}
+                </td>
                 <td data-label="Fabric result">
                   <span className={fabric.className} aria-label={fabric.ariaLabel}>
                     {fabric.text}

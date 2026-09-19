@@ -154,6 +154,18 @@ a {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+  min-width: 0;
+}
+
+/* Flex children default to an automatic min-width based on their content's
+   min-content size, which lets a wide table or <pre> force the whole column
+   wider than the viewport — and because `html, body` clip horizontal
+   overflow (below), that shows up as content clipped at the right edge
+   rather than a scrollbar. Every child of a flex/grid layout that might hold
+   a table or `<pre>` needs `min-width: 0` so it can shrink to the available
+   width and let its own `overflow-x: auto` wrapper do the scrolling instead. */
+.app-main__inner > * {
+  min-width: 0;
 }
 
 /* ---------- Common building blocks ---------- */
@@ -282,15 +294,3 @@ a {
   }
 }
 
-.placeholder-panel {
-  padding: var(--space-7) var(--space-5);
-  text-align: center;
-  color: var(--color-text-muted);
-  border: 1px dashed var(--color-border-strong);
-  border-radius: var(--radius-lg);
-}
-
-.placeholder-panel h2 {
-  color: var(--color-text);
-  margin-bottom: var(--space-2);
-}

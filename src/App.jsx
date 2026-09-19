@@ -2,7 +2,10 @@ import { useCallback, useMemo } from 'react';
 import { Shell } from './components/layout/Shell.jsx';
 import { DecisionsView } from './views/DecisionsView.jsx';
 import { DecisionDetailView } from './views/DecisionDetailView.jsx';
-import { PlaceholderView } from './views/PlaceholderView.jsx';
+import { AdvisorView } from './views/AdvisorView.jsx';
+import { MatrixView } from './views/MatrixView.jsx';
+import { PoliciesView } from './views/PoliciesView.jsx';
+import { BoundaryView } from './views/BoundaryView.jsx';
 import ErrorBoundary from './components/common/ErrorBoundary.jsx';
 import { useQueryParamState } from './hooks/useQueryParamState.js';
 import { LEDGER } from './data/ledger.js';
@@ -14,13 +17,6 @@ const NAV_ITEMS = [
   { id: 'policies', label: 'Policies' },
   { id: 'boundary', label: 'Boundary' },
 ];
-
-const PLACEHOLDER_COPY = {
-  advisor: 'The actionless advisor workflow — prompts, continuations and the tamper toggle.',
-  matrix: 'The interactive outcome matrix explorer.',
-  policies: 'Persona and action policy records, registry validation, and version diffs.',
-  boundary: 'The ownership map: what Janus owns, and what it refuses to.',
-};
 
 export default function App() {
   const [view, setView] = useQueryParamState('view', 'decisions');
@@ -50,9 +46,32 @@ export default function App() {
     );
   } else if (view === 'decisions') {
     content = <DecisionsView onSelectScenario={handleSelectScenario} />;
+  } else if (view === 'advisor') {
+    content = (
+      <ErrorBoundary>
+        <AdvisorView />
+      </ErrorBoundary>
+    );
+  } else if (view === 'matrix') {
+    content = (
+      <ErrorBoundary>
+        <MatrixView />
+      </ErrorBoundary>
+    );
+  } else if (view === 'policies') {
+    content = (
+      <ErrorBoundary>
+        <PoliciesView />
+      </ErrorBoundary>
+    );
+  } else if (view === 'boundary') {
+    content = (
+      <ErrorBoundary>
+        <BoundaryView />
+      </ErrorBoundary>
+    );
   } else {
-    const activeNav = NAV_ITEMS.find((item) => item.id === view);
-    content = <PlaceholderView title={activeNav?.label ?? view} description={PLACEHOLDER_COPY[view]} />;
+    content = <DecisionsView onSelectScenario={handleSelectScenario} />;
   }
 
   return (

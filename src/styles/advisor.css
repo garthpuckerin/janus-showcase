@@ -1,0 +1,136 @@
+/* The Advisor workflow: the Ask/Clarify forms, the continuation card, the
+   tamper controls and the persistent "why this persona cannot act" panel. */
+.advisor-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+  min-width: 0;
+}
+
+.advisor-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.advisor-why {
+  position: sticky;
+  top: var(--space-5);
+}
+
+.advisor-why__events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.advisor-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.advisor-field textarea,
+.advisor-field input[type='text'],
+.advisor-field input[type='number'] {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.advisor-field__help {
+  margin: 0;
+  color: var(--color-text-faint);
+  font-size: 0.78rem;
+}
+
+.advisor-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.advisor-result-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.advisor-continuation__row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  font-size: 0.85rem;
+}
+
+.advisor-continuation__row dt {
+  color: var(--color-text-muted);
+}
+
+.advisor-continuation__row dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  word-break: break-word;
+}
+
+.advisor-continuation__disclaimers {
+  margin: var(--space-2) 0 0;
+  padding-left: var(--space-5);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.advisor-tamper {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.advisor-tamper legend {
+  padding: 0 var(--space-1);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.advisor-tamper__option {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: 0.88rem;
+}
+
+.advisor-tamper__description {
+  color: var(--color-text-faint);
+  font-size: 0.78rem;
+  flex-basis: 100%;
+  margin-left: 1.6rem;
+}
+
+@media (max-width: 900px) {
+  .advisor-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .advisor-why {
+    position: static;
+  }
+}

@@ -1,0 +1,30 @@
+/* The ownership map and the composed-runtime summary. */
+.boundary-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.boundary-column ul {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: 0.88rem;
+}
+
+.boundary-runtime-steps {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: 0.9rem;
+}
+
+/* Empty on purpose — the architecture figure is added later. */
+.architecture-figure-slot {
+  min-height: 1px;
+}

@@ -1,0 +1,43 @@
+/* The interactive outcome-matrix explorer. */
+.matrix-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.matrix-controls__fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.field--checkbox label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text);
+}
+
+.matrix-controls__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.matrix-result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.matrix-result--invalid {
+  border-color: var(--color-warning-text);
+  background: var(--color-warning-bg);
+}
+
+.matrix-explorer-table {
+  overflow-x: auto;
+  min-width: 0;
+}

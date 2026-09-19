@@ -11,3 +11,23 @@ export function relativeTimeFromNow(isoString, now = new Date()) {
 }
 
 export const policyRefLabel = (id, version) => `${id}@${version}`;
+
+/* Human labels for the model-status enum `evaluate()` returns in
+   `diagnostics.model_status`. The raw value is protocol-shaped (it is what
+   the domain layer actually returns) but not itself prose — this is the one
+   place a display label is derived from it. Unknown values fall back to the
+   raw value itself rather than hiding information. */
+const MODEL_STATUS_LABELS = Object.freeze({
+  not_applicable: 'Not applicable — not reached',
+  not_called: 'Not called',
+  no_port: 'No port',
+  timeout: 'Timed out',
+  error: 'Port error',
+  invalid_output: 'Invalid output',
+  below_threshold: 'Below confidence threshold',
+  accepted: 'Accepted',
+});
+
+export function modelStatusLabel(status) {
+  return MODEL_STATUS_LABELS[status] ?? status;
+}

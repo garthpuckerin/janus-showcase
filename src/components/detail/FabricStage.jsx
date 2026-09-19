@@ -1,4 +1,5 @@
 import { CALLERS } from '../../data/callers.js';
+import { ACTION_POLICIES, findActionPolicy } from '../../domain/policies.js';
 
 /** Trusted caller + ticket (or rejection). Only ACTIVATE_SHARD ever reaches
  *  here — every other directive renders the boundary note instead. */
@@ -19,6 +20,17 @@ export function FabricStage({ directive, fabric, callerId }) {
   const rejection = fabric?.kind === 'rejection' ? fabric.rejection : null;
   const allowedScopes = ticket?.allowed_scopes ?? [];
   const grantedScopes = caller?.granted_scopes ?? [];
+
+  // The authority the policy requires is known even on rejection — the
+  // directive's own payload names the action policy, whether or not a
+  // ticket was ever derived from it. "—" is reserved for the case where
+  // that policy itself cannot be resolved at all.
+  const referencedPolicy = findActionPolicy(
+    ACTION_POLICIES,
+    directive.payload?.action_policy_id,
+    directive.payload?.action_policy_version,
+  );
+  const authorityRequired = referencedPolicy?.maximum_authority ?? '—';
 
   return (
     <div className="rail-stage">
@@ -58,7 +70,7 @@ export function FabricStage({ directive, fabric, callerId }) {
           </div>
         </div>
         <p className="page-framing">
-          Authority required: <strong>{ticket?.maximum_authority ?? '—'}</strong> · Authority held:{' '}
+          Authority required: <strong>{authorityRequired}</strong> · Authority held:{' '}
           <strong>{caller?.maximum_authority ?? '—'}</strong>
         </p>
         {rejection && (

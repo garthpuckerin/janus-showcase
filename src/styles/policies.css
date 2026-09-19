@@ -1,0 +1,91 @@
+/* Policy registry, the draft validator, and the version diff. */
+.policy-registry {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.policy-card {
+  min-width: 0;
+}
+
+.policy-card h3 {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  margin-bottom: var(--space-3);
+}
+
+.policy-card dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.policy-card dt {
+  color: var(--color-text-muted);
+}
+
+.policy-card dd {
+  margin: 0;
+}
+
+.policy-card__routes,
+.policy-card__acceptance {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.policy-draft__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+  margin: var(--space-4) 0;
+}
+
+.policy-draft__valid {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-success-text);
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+  border-radius: var(--radius-md);
+}
+
+.policy-diff {
+  overflow-x: auto;
+  min-width: 0;
+}
+
+.policy-diff__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin: var(--space-3) 0;
+}
+
+.policy-diff__table th,
+.policy-diff__table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.policy-diff__table th[scope='row'] {
+  font-family: var(--font-mono);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 375px) {
+  .policy-draft__controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
