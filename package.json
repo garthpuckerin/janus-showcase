@@ -1,0 +1,14 @@
+{
+  "name": "janus-showcase",
+  "description": "Janus — public cockpit demo. An operator console over a policy-bound decision engine: one request in, exactly one directive out, nothing executed. Mock data; the engine is private.",
+  "homepage": "https://garthpuckerin-janus.vercel.app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:unit": "node --test"
+  }
+}
