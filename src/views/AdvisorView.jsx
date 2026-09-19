@@ -10,7 +10,7 @@ import { AdvisorClarifyForm } from '../components/advisor/AdvisorClarifyForm.jsx
 import { ContinuationCard } from '../components/advisor/ContinuationCard.jsx';
 import { WhyCannotActPanel } from '../components/advisor/WhyCannotActPanel.jsx';
 import { ModelStatusPanel } from '../components/advisor/ModelStatusPanel.jsx';
-import { ADVISOR_PORT_PRESETS, DEFAULT_ADVISOR_PORT_KEY } from '../components/advisor/advisorPresets.js';
+import { ADVISOR_PORT_PRESETS, DEFAULT_ADVISOR_PORT_KEY, DEFAULT_ASK_PORT_KEY } from '../components/advisor/advisorPresets.js';
 import {
   buildAskRequest,
   buildClarifyRequest,
@@ -54,7 +54,7 @@ export function AdvisorView() {
   }, []);
 
   const [askValues, setAskValues] = useState(INITIAL_ASK_VALUES);
-  const [askPortKey, setAskPortKey] = useState(DEFAULT_ADVISOR_PORT_KEY);
+  const [askPortKey, setAskPortKey] = useState(DEFAULT_ASK_PORT_KEY);
   const [askOutcome, setAskOutcome] = useState(null);
 
   const [clarifyValues, setClarifyValues] = useState({});
@@ -95,7 +95,7 @@ export function AdvisorView() {
 
   const handleReset = useCallback(() => {
     setAskValues(INITIAL_ASK_VALUES);
-    setAskPortKey(DEFAULT_ADVISOR_PORT_KEY);
+    setAskPortKey(DEFAULT_ASK_PORT_KEY);
     setAskOutcome(null);
     setClarifyValues({});
     setClarifyPortKey(DEFAULT_ADVISOR_PORT_KEY);
@@ -175,9 +175,15 @@ export function AdvisorView() {
               <div className="advisor-result-block">
                 {clarifyOutcome.tampered && (
                   <p className="error-card" role="status">
-                    Tampered continuation sent. The model was called <strong>{clarifyOutcome.portCallCount}</strong>{' '}
-                    time(s) — revalidation fails before the model is ever touched, so a tampered continuation never
-                    reaches it.
+                    Tampered continuation sent.{' '}
+                    {clarifyOutcome.portCallCount === 0 ? (
+                      <>
+                        <strong>The model was not called</strong> — the continuation is revalidated before model
+                        participation, so this one never reached the port.
+                      </>
+                    ) : (
+                      <strong>Unexpected: the model port was called during this evaluation.</strong>
+                    )}
                   </p>
                 )}
                 <div className="rail-row">

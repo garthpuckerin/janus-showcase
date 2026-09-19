@@ -18,8 +18,12 @@ export const RESERVED_INPUT_NAMES = Object.freeze([
 const UNAVAILABLE_STATUSES = ['no_port', 'timeout', 'error', 'invalid_output'];
 const isPresent = (v) => v !== undefined && v !== null && !(typeof v === 'string' && v.trim() === '');
 
-/* Deterministic, dependency-free identity (FNV-1a). Illustrative: the point is
-   that an id is a function of its content, so a forged one cannot validate. */
+/* Deterministic, dependency-free identity (FNV-1a). Illustrative: an id is a
+   function of its content, so a continuation edited after minting no longer
+   matches its own id. This is consistency, NOT tamper-proofing — nothing is
+   signed, and a self-consistent continuation still validates. That is safe by
+   design: a continuation grants nothing, and every persona, policy-version,
+   event, route and field constraint is re-checked on every use. */
 function stableId(prefix, parts) {
   let h = 0x811c9dc5;
   for (const ch of JSON.stringify(parts)) {

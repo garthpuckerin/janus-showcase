@@ -14,22 +14,10 @@ export function DecisionsTable({ rows, now, onSelectScenario }) {
     <div className="panel decisions-table-wrap">
       <table className="decisions-table">
         <caption className="visually-hidden">Decision ledger: one row per evaluated request.</caption>
-        <colgroup>
-          <col />
-          <col className="decisions-table__col--title" />
-          <col />
-          <col />
-          <col />
-          <col />
-          <col />
-          <col />
-        </colgroup>
         <thead>
           <tr>
             <th scope="col">When</th>
-            <th scope="col" className="decisions-table__title-col">Decision</th>
-            <th scope="col">Persona policy</th>
-            <th scope="col">Event</th>
+            <th scope="col">Decision · persona policy · event</th>
             <th scope="col">Directive</th>
             <th scope="col">Matrix row</th>
             <th scope="col">Model</th>
@@ -54,9 +42,14 @@ export function DecisionsTable({ rows, now, onSelectScenario }) {
                   >
                     <span className="decisions-table__title">{scenario.title}</span>
                   </button>
+                  <span className="decisions-table__meta">
+                    <span className="visually-hidden">Persona policy </span>
+                    {policyRefLabel(scenario.request.persona.policy_id, scenario.request.persona.policy_version)}
+                    <span aria-hidden="true"> · </span>
+                    <span className="visually-hidden">, event </span>
+                    {scenario.request.event.type}
+                  </span>
                 </td>
-                <td data-label="Persona policy">{policyRefLabel(scenario.request.persona.policy_id, scenario.request.persona.policy_version)}</td>
-                <td data-label="Event">{scenario.request.event.type}</td>
                 <td data-label="Directive">
                   <DirectiveChip type={evaluation.directive.type} />
                 </td>

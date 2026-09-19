@@ -76,13 +76,9 @@
   font-size: 0.9rem;
 }
 
-/* The title column gets the flexible width; every other column is a short,
-   fixed-vocabulary value that should stay on one line. Nothing is clipped —
-   `.decisions-table-wrap` scrolls horizontally on its own if a row is
-   genuinely wider than the panel, so the page itself never does. */
-.decisions-table__col--title {
-  width: 100%;
-}
+/* Six columns that fit. The long contract identifiers (persona policy, event
+   type) ride under the title as a meta line that may wrap anywhere, so the
+   table never needs a sideways scroll to show its last column. */
 
 .decisions-table th {
   text-align: left;
@@ -97,14 +93,23 @@
   padding: var(--space-3);
   border-bottom: 1px solid var(--color-border);
   vertical-align: middle;
+}
+
+/* Only the short fixed-vocabulary columns hold one line: When, Directive,
+   Matrix row. Title, Model and Fabric result may wrap. */
+.decisions-table td:nth-child(1),
+.decisions-table td:nth-child(3),
+.decisions-table td:nth-child(4) {
   white-space: nowrap;
 }
 
 /* The title column is the one place wrapping is correct: the scenario title
    is prose, not a short fixed-vocabulary value. */
+/* No percentage width here: in auto table layout a 100% cell makes the table
+   as wide as itself PLUS every other column. The nowrap columns take their
+   content width and this one absorbs the rest. */
 .decisions-table__title-cell {
-  white-space: normal;
-  min-width: 16rem;
+  min-width: 18rem;
 }
 
 .decisions-table tbody tr {
@@ -127,8 +132,12 @@
 }
 
 .decisions-table__meta {
+  display: block;
+  margin-top: var(--space-1);
   color: var(--color-text-muted);
-  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
 }
 
 .not-applicable {
@@ -154,6 +163,11 @@
   .decisions-table thead {
     position: absolute;
     left: -9999px;
+  }
+
+  .decisions-table td:nth-child(n) {
+    white-space: normal;
+    min-width: 0;
   }
 
   .decisions-table tr {

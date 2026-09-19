@@ -50,4 +50,7 @@ export const ADVISOR_PORT_PRESETS = Object.freeze({
   },
 });
 
+/* The first ask opens on the signature path (a continuation is minted); the
+   follow-up opens on accepted advice, so the walk completes in two clicks. */
+export const DEFAULT_ASK_PORT_KEY = 'needs-input';
 export const DEFAULT_ADVISOR_PORT_KEY = 'advice-above-floor';
