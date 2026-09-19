@@ -1,0 +1,164 @@
+/* The Decisions ledger: filter chips, the table, directive chips, and the
+   card layout it collapses into on narrow screens. */
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: 999px;
+  border: 1px solid var(--color-border-strong);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.filter-chip__count {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-faint);
+}
+
+.filter-chip--active {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border-color: var(--color-accent);
+}
+
+.filter-chip--active .filter-chip__count {
+  color: var(--color-text);
+}
+
+.directive-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.directive-chip--activate-shard {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+  border-color: var(--color-success-text);
+}
+
+.directive-chip--advise {
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
+  border-color: var(--color-info-text);
+}
+
+.directive-chip--request-input {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  border-color: var(--color-warning-text);
+}
+
+.decisions-table-wrap {
+  overflow-x: auto;
+}
+
+.decisions-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.decisions-table th {
+  text-align: left;
+  padding: var(--space-3);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.decisions-table td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.decisions-table tbody tr {
+  cursor: pointer;
+}
+
+.decisions-table tbody tr:hover {
+  background: var(--color-surface-raised);
+}
+
+.decisions-table__row-button {
+  all: unset;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.decisions-table__title {
+  font-weight: 600;
+}
+
+.decisions-table__meta {
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+.not-applicable {
+  color: var(--color-text-faint);
+}
+
+.matrix-row-tag {
+  font-family: var(--font-mono);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Mobile: table becomes cards ---------- */
+@media (max-width: 768px) {
+  .decisions-table,
+  .decisions-table thead,
+  .decisions-table tbody,
+  .decisions-table tr,
+  .decisions-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .decisions-table thead {
+    position: absolute;
+    left: -9999px;
+  }
+
+  .decisions-table tr {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-3);
+    padding: var(--space-3);
+  }
+
+  .decisions-table td {
+    border-bottom: none;
+    padding: var(--space-1) 0;
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  .decisions-table td::before {
+    content: attr(data-label);
+    color: var(--color-text-faint);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+}

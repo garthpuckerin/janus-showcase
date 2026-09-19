@@ -1,0 +1,251 @@
+/* The decision-detail rail: Request → pre-matrix checks → outcome matrix →
+   directive → boundary → trusted caller → ticket/rejection → outcome. */
+.decision-rail {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-4);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+}
+
+.rail-stage {
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.rail-stage__heading {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.rail-stage--not-reached {
+  opacity: 0.5;
+}
+
+.rail-stage--not-reached .panel {
+  border-style: dashed;
+}
+
+.rail-connector {
+  flex: 0 0 auto;
+  align-self: center;
+  color: var(--color-text-faint);
+}
+
+.boundary-divider {
+  flex: 0 0 4px;
+  align-self: stretch;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--color-accent-strong),
+    var(--color-accent-strong) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+  border-radius: 2px;
+  position: relative;
+}
+
+.boundary-divider__label {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  width: max-content;
+  font-size: 0.72rem;
+  color: var(--color-accent-strong);
+  font-weight: 700;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.rail-stage dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  margin: 0 0 var(--space-3);
+  font-size: 0.85rem;
+}
+
+.rail-stage dt {
+  color: var(--color-text-muted);
+}
+
+.rail-stage dd {
+  margin: 0;
+}
+
+.trace-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.trace-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: 0.85rem;
+}
+
+.trace-item__icon {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.trace-item--pass .trace-item__icon {
+  color: var(--color-success-text);
+}
+
+.trace-item--fail .trace-item__icon {
+  color: var(--color-error-text);
+}
+
+.matrix-mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+.matrix-mini-table th,
+.matrix-mini-table td {
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.matrix-mini-table tr[aria-current='true'] {
+  background: var(--color-info-bg);
+  outline: 2px solid var(--color-info-text);
+  outline-offset: -2px;
+}
+
+.directive-json {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.scope-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.rail-stage h4 {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin: var(--space-3) 0 var(--space-2);
+}
+
+.scope-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.scope-list__item--absent {
+  color: var(--color-text-faint);
+  text-decoration: line-through;
+}
+
+.rejection-details {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  white-space: pre-wrap;
+}
+
+.correlation-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.correlation-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.correlation-item__check {
+  color: var(--color-success-text);
+}
+
+.correlation-item__cross {
+  color: var(--color-error-text);
+}
+
+.rerun-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.rerun-panel__fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+@media (max-width: 768px) {
+  .decision-rail {
+    flex-direction: column;
+    overflow-x: visible;
+  }
+
+  .rail-stage {
+    flex-basis: auto;
+  }
+
+  .rail-connector {
+    align-self: flex-start;
+    transform: rotate(90deg);
+  }
+
+  .boundary-divider {
+    flex-basis: 4px;
+    width: 100%;
+    height: 4px;
+    background: repeating-linear-gradient(
+      to right,
+      var(--color-accent-strong),
+      var(--color-accent-strong) 6px,
+      transparent 6px,
+      transparent 12px
+    );
+  }
+
+  .boundary-divider__label {
+    writing-mode: horizontal-tb;
+    position: static;
+    display: block;
+    margin-top: var(--space-1);
+  }
+
+  .scope-columns {
+    grid-template-columns: 1fr;
+  }
+}
