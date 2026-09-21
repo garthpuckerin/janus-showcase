@@ -37,6 +37,22 @@ const TOUCH_TARGET_ALLOWLIST = [];
 
 const INTERACTIVE_SELECTOR = 'button, a[href], select, input:not([type=hidden]), textarea, summary, [role="button"]';
 
+/* ISSUE-003 added a landing/onboarding gate in front of every route. Every
+ * context in this file navigates straight to a `?view=…` route, so
+ * `isDeepLink` (src/utils/entryGate.js) already bypasses the gate on its
+ * own — but every context is seeded anyway so this file never depends on
+ * that overload, only on the app underneath. */
+function seedPastEntryGate(context) {
+  return context.addInitScript(() => {
+    try {
+      window.sessionStorage.setItem('janus:entered', '1');
+      window.localStorage.setItem('janus:onboarded', 'done');
+    } catch {
+      // Storage blocked — nothing to seed; the gate's own try/catch handles it.
+    }
+  });
+}
+
 function runVite(args) {
   return new Promise((resolveRun, rejectRun) => {
     const child = spawn(process.execPath, [VITE_BIN, ...args], { cwd: ROOT, stdio: 'inherit' });
@@ -231,6 +247,7 @@ async function checkWizardStep(page, label, viewport) {
 async function runAdvisorWizardChecks(browser) {
   const iphone = devices['iPhone 13'];
   const context = await browser.newContext({ ...iphone });
+  await seedPastEntryGate(context);
   const page = await context.newPage();
   const viewport = iphone.viewport;
 
@@ -273,6 +290,7 @@ async function runAdvisorWizardChecks(browser) {
 async function runAdviceFirstPath(browser) {
   const iphone = devices['iPhone 13'];
   const context = await browser.newContext({ ...iphone });
+  await seedPastEntryGate(context);
   const page = await context.newPage();
 
   await page.goto(`${BASE_URL}/?view=advisor`, { waitUntil: 'networkidle' });
@@ -294,6 +312,7 @@ async function runAdviceFirstPath(browser) {
 async function runTamperMode(browser, tamperKey) {
   const iphone = devices['iPhone 13'];
   const context = await browser.newContext({ ...iphone });
+  await seedPastEntryGate(context);
   const page = await context.newPage();
 
   await page.goto(`${BASE_URL}/?view=advisor`, { waitUntil: 'networkidle' });
@@ -323,6 +342,7 @@ async function runTamperMode(browser, tamperKey) {
 async function runMatrixLookupChecks(browser) {
   const iphone = devices['iPhone 13'];
   const context = await browser.newContext({ ...iphone });
+  await seedPastEntryGate(context);
   const page = await context.newPage();
   const viewport = iphone.viewport;
 
@@ -405,6 +425,7 @@ async function runMatrixLookupChecks(browser) {
 async function runSelfTest(browser) {
   const iphone = devices['iPhone 13'];
   const context = await browser.newContext({ ...iphone });
+  await seedPastEntryGate(context);
   const page = await context.newPage();
   const viewport = iphone.viewport;
 

@@ -1,0 +1,118 @@
+/* Desktop orientation dialog (ISSUE-003, docs/DESIGN-SYSTEM.md "Entry:
+   landing and orientation") and the beat-figure vocabulary shared with the
+   phone's OrientationSteps (`companion-onboarding.css`). A centred modal,
+   NOT a spotlight tour — the four beats are self-contained content, never a
+   callout pointing at live UI underneath. */
+
+.orientation-dialog__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: color-mix(in srgb, var(--color-ink) 45%, transparent);
+}
+
+.orientation-dialog {
+  width: 100%;
+  max-width: 35rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-float);
+}
+
+.orientation-dialog__step {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.orientation-dialog__title {
+  font-size: var(--text-xl);
+}
+
+.orientation-dialog__body {
+  margin: 0;
+  color: var(--color-ink-muted);
+}
+
+.orientation-dialog__figure {
+  margin: var(--space-2) 0;
+}
+
+.orientation-dialog__actions {
+  margin-top: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.orientation-dialog__nav {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.orientation-dialog__skip,
+.orientation-dialog .button {
+  min-height: 2.75rem;
+}
+
+.orientation-dialog__next {
+  min-width: 9rem;
+}
+
+/* ---------- Beat figure — shared by the dialog and the phone steps ---------- */
+.beat-figure {
+  margin: 0;
+}
+
+.beat-figure--request {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.beat-figure__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.beat-figure__label {
+  flex: 0 0 8rem;
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.beat-figure__value {
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.beat-figure--directives {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.beat-figure--seam {
+  margin: 0;
+}
+
+.beat-figure--empty {
+  margin: 0;
+  color: var(--color-ink-muted);
+}

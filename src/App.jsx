@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Shell } from './components/layout/Shell.jsx';
 import { CompanionShell } from './components/companion/CompanionShell.jsx';
+import { EntryGate } from './components/entry/EntryGate.jsx';
 import { DecisionsView } from './views/DecisionsView.jsx';
 import { DecisionDetailView } from './views/DecisionDetailView.jsx';
 import { AdvisorView } from './views/AdvisorView.jsx';
@@ -74,71 +75,79 @@ export default function App() {
     [setView, setSelectedId],
   );
 
-  if (!workstation.isWorkstation) {
-    return (
-      <CompanionShell
-        view={view}
-        selectedId={selectedId}
-        onNavigate={handleNavigate}
-        onOpenDecision={handleOpenDecision}
-        onCloseDecision={handleCloseDetail}
-        onForceDesktop={workstation.forceDesktop}
-      />
-    );
-  }
-
-  const active = activeNavItem(view);
-  const pageEyebrow = active?.group.label ?? null;
-  const pageTitle = active?.item.label ?? null;
-
-  let content;
-  if (view === 'decisions' && selectedId) {
-    content = (
-      <ErrorBoundary>
-        <DecisionDetailView entry={selectedEntry} onBack={handleCloseDetail} />
-      </ErrorBoundary>
-    );
-  } else if (view === 'decisions') {
-    content = <DecisionsView onSelectScenario={handleSelectScenario} />;
-  } else if (view === 'advisor') {
-    content = (
-      <ErrorBoundary>
-        <AdvisorView />
-      </ErrorBoundary>
-    );
-  } else if (view === 'matrix') {
-    content = (
-      <ErrorBoundary>
-        <MatrixView />
-      </ErrorBoundary>
-    );
-  } else if (view === 'policies') {
-    content = (
-      <ErrorBoundary>
-        <PoliciesView />
-      </ErrorBoundary>
-    );
-  } else if (view === 'boundary') {
-    content = (
-      <ErrorBoundary>
-        <BoundaryView />
-      </ErrorBoundary>
-    );
-  } else {
-    content = <DecisionsView onSelectScenario={handleSelectScenario} />;
-  }
-
   return (
-    <Shell
-      showBackToPhone={workstation.forcedOnNarrowViewport}
-      onBackToPhone={workstation.clearForceDesktop}
-      navGroups={NAV_GROUPS}
-      activeView={view}
-      onNavigate={handleNavigate}
-      pageEyebrow={pageEyebrow}
-      pageTitle={pageTitle}
-    >
-      {content}
-    </Shell>
+    <EntryGate isWorkstation={workstation.isWorkstation}>
+      {({ replayIntro }) => {
+        if (!workstation.isWorkstation) {
+          return (
+            <CompanionShell
+              view={view}
+              selectedId={selectedId}
+              onNavigate={handleNavigate}
+              onOpenDecision={handleOpenDecision}
+              onCloseDecision={handleCloseDetail}
+              onForceDesktop={workstation.forceDesktop}
+              onReplayIntro={replayIntro}
+            />
+          );
+        }
+
+        const active = activeNavItem(view);
+        const pageEyebrow = active?.group.label ?? null;
+        const pageTitle = active?.item.label ?? null;
+
+        let content;
+        if (view === 'decisions' && selectedId) {
+          content = (
+            <ErrorBoundary>
+              <DecisionDetailView entry={selectedEntry} onBack={handleCloseDetail} />
+            </ErrorBoundary>
+          );
+        } else if (view === 'decisions') {
+          content = <DecisionsView onSelectScenario={handleSelectScenario} />;
+        } else if (view === 'advisor') {
+          content = (
+            <ErrorBoundary>
+              <AdvisorView />
+            </ErrorBoundary>
+          );
+        } else if (view === 'matrix') {
+          content = (
+            <ErrorBoundary>
+              <MatrixView />
+            </ErrorBoundary>
+          );
+        } else if (view === 'policies') {
+          content = (
+            <ErrorBoundary>
+              <PoliciesView />
+            </ErrorBoundary>
+          );
+        } else if (view === 'boundary') {
+          content = (
+            <ErrorBoundary>
+              <BoundaryView />
+            </ErrorBoundary>
+          );
+        } else {
+          content = <DecisionsView onSelectScenario={handleSelectScenario} />;
+        }
+
+        return (
+          <Shell
+            showBackToPhone={workstation.forcedOnNarrowViewport}
+            onBackToPhone={workstation.clearForceDesktop}
+            navGroups={NAV_GROUPS}
+            activeView={view}
+            onNavigate={handleNavigate}
+            pageEyebrow={pageEyebrow}
+            pageTitle={pageTitle}
+            onReplayIntro={replayIntro}
+          >
+            {content}
+          </Shell>
+        );
+      }}
+    </EntryGate>
   );
 }

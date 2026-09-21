@@ -1,0 +1,199 @@
+/* Landing gate (ISSUE-003, docs/DESIGN-SYSTEM.md "Entry: landing and
+   orientation"). One screen, no scrolling, at 1280×800 or at 390×664. The
+   two-faces device carries the hero: `.landing--workstation` splits it left
+   (light, the copy) / right (dark `.panel-face`, the identity strip) with a
+   VERTICAL seam between them — the one place in the app the seam runs
+   vertically, because this is the only side-by-side use of the device;
+   everywhere else stacks Janus's side above Fabric's. `.landing--companion`
+   stacks the same two faces, seam horizontal as usual, dark face full-bleed
+   beneath the copy. Sizes here are fixed rem values, never `--row-height`
+   (which `[data-density="dense"]` shrinks below 44px) — a 44px touch target
+   must not depend on a preference a visitor could have set before the gate. */
+
+.landing {
+  min-height: 100vh;
+  display: flex;
+  background: var(--color-canvas);
+}
+
+.landing--workstation {
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.landing--companion {
+  flex-direction: column;
+}
+
+.landing__face {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.landing__face--light {
+  padding: var(--space-5) var(--page-gutter);
+  gap: var(--space-3);
+}
+
+/* Two equal faces. The copy keeps its own measure (`.landing__copy`) and sits
+   toward the seam with room to breathe — at 1440px a 34rem face hugging the
+   left edge read as a sidebar, not as one of two faces. */
+.landing--workstation .landing__face--light {
+  flex: 1 1 50%;
+  align-items: center;
+  padding-left: clamp(2rem, 6vw, 6rem);
+  padding-right: clamp(2rem, 4vw, 4rem);
+}
+
+.landing--workstation .landing__face--light > * {
+  width: 100%;
+  max-width: 34rem;
+}
+
+.landing__wordmark {
+  margin-bottom: var(--space-1);
+}
+
+.landing__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.landing__title {
+  font-size: var(--text-3xl);
+}
+
+.landing--companion .landing__title {
+  font-size: var(--text-2xl);
+}
+
+.landing__lede {
+  margin: 0;
+  color: var(--color-ink-muted);
+  max-width: 34rem;
+}
+
+.landing--companion .landing__lede {
+  font-size: var(--text-sm);
+}
+
+.landing__honesty {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+.landing__enter {
+  min-height: 2.75rem;
+  min-width: 11rem;
+  margin-top: var(--space-1);
+}
+
+/* ---------- Seam ---------- */
+.landing__seam {
+  flex: none;
+}
+
+.landing--companion .landing__seam {
+  width: 100%;
+}
+
+/* The only vertical seam in the app: a left rule instead of a top one, and
+   the label reads top-to-bottom so it still fits a narrow column. */
+.landing--workstation .landing__seam {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  border-top: 0;
+  border-left: 3px solid var(--color-accent);
+  padding: var(--space-2) 0;
+  width: 2.5rem;
+}
+
+/* ---------- Dark face ---------- */
+.landing__face--dark {
+  border: 0;
+  border-radius: 0;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--page-gutter);
+}
+
+.landing--workstation .landing__face--dark {
+  flex: 1 1 50%;
+  justify-content: center;
+  align-items: center;
+}
+
+.landing__dark-inner {
+  width: 100%;
+  max-width: 26rem;
+}
+
+/* Full-bleed on the phone: left 0, right = viewport width — no card margin
+   either side, matching the design system's "full-bleed" rule for the story
+   view's dark region. */
+.landing--companion .landing__face--dark {
+  margin: 0;
+  /* No strip of canvas under Fabric's face: the two faces share whatever
+     height is left over (none on a phone; on a portrait tablet it kept the
+     dark face from taking 70% of the screen). */
+  flex: 1 1 auto;
+  justify-content: center;
+}
+
+.landing--companion .landing__face--light {
+  flex: 1 1 auto;
+}
+
+.landing__eyebrow {
+  margin: 0 0 var(--space-3);
+  color: var(--color-panel-muted);
+}
+
+/* ---------- Compact identity strip (the dark face's figure) ---------- */
+.landing-identity {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.landing-identity__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-panel-border);
+}
+
+.landing-identity__row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.landing-identity__label {
+  flex: 0 0 5.5rem;
+  color: var(--color-panel-muted);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.landing-identity__value {
+  color: var(--color-ink-inverse);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .landing--companion .landing__face--light,
+  .landing--companion .landing__face--dark {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

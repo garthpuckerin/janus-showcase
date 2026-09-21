@@ -59,6 +59,7 @@ const CELLS = [
 const DECISION_ID = LEDGER.find((entry) => entry.fabric?.kind === 'ticket').scenario.id;
 const SCREENS = [
   { id: 'home', query: '' },
+  { id: 'landing', query: '', gated: true },
   { id: 'decisions', query: 'view=decisions' },
   { id: 'decision', query: `view=decisions&d=${encodeURIComponent(DECISION_ID)}` },
   { id: 'advisor', query: 'view=advisor' },
@@ -66,6 +67,25 @@ const SCREENS = [
   { id: 'policies', query: 'view=policies' },
   { id: 'boundary', query: 'view=boundary' },
 ];
+
+/* ISSUE-003 added a landing/onboarding gate in front of every route. Every
+ * cell's context is seeded past it (below) so `home` and every other screen
+ * see the app, exactly as before ISSUE-003 landed — EXCEPT `landing`, which
+ * opens its own UNSEEDED context per cell specifically to look at the gate
+ * itself at every shape. A forced-desktop cell reaches the workstation shell
+ * via a deep link (`?view=desktop`, which `isDeepLink` always bypasses the
+ * gate for) before `landing` would ever apply, so those cells skip it — see
+ * the loop below, which never opens `landing` for a `forced` cell. */
+function seedPastEntryGate(context) {
+  return context.addInitScript(() => {
+    try {
+      window.sessionStorage.setItem('janus:entered', '1');
+      window.localStorage.setItem('janus:onboarded', 'done');
+    } catch {
+      // Storage blocked — nothing to seed; the gate's own try/catch handles it.
+    }
+  });
+}
 
 function runVite(args) {
   return new Promise((resolveRun, rejectRun) => {
@@ -137,7 +157,7 @@ function measure() {
   const sideRail = railBox && railBox.height > railBox.width ? Math.round(railBox.width) : 0;
 
   const firstContent = document.querySelector(
-    '.attention-card__button, .decision-card__button, .story__verdict-row, .advisor-wizard__screen, .matrix-lookup__dock, .data-state, .data-table, .detail-page .identity-chain, .page-heading',
+    '.landing h1, .attention-card__button, .decision-card__button, .story__verdict-row, .advisor-wizard__screen, .matrix-lookup__dock, .data-state, .data-table, .detail-page .identity-chain, .page-heading',
   );
   const tabs = document.querySelector('.companion-tabs');
   const tabBox = tabs ? tabs.getBoundingClientRect() : null;
@@ -149,7 +169,13 @@ function measure() {
     docWidth: document.documentElement.scrollWidth,
     docHeight: document.documentElement.scrollHeight,
     bodyHeight: document.body.scrollHeight,
-    shell: document.querySelector('.app-sidebar') ? 'desktop' : document.querySelector('.companion-tabs') ? 'companion' : 'none',
+    shell: document.querySelector('.app-sidebar')
+      ? 'desktop'
+      : document.querySelector('.companion-tabs')
+        ? 'companion'
+        : document.querySelector('.landing')
+          ? 'landing'
+          : 'none',
     tooWide: tooWide.slice(0, 4),
     tooWideCount: tooWide.length,
     sideScrollers: [...new Set(sideScrollers)].slice(0, 4),
@@ -170,11 +196,25 @@ function measure() {
 function judge(cell, screen, m) {
   const problems = [];
   const expectDesktop = cell.forced || cell.device.viewport.width >= WORKSTATION_MIN;
-  if (m.shell !== (expectDesktop ? 'desktop' : 'companion')) problems.push(`shell=${m.shell}, expected ${expectDesktop ? 'desktop' : 'companion'}`);
+  // `landing` (ISSUE-003) is neither shell — it is the gate in front of both,
+  // opened on its own unseeded context — so it gets its own expectation
+  // instead of the desktop/companion split every other screen judges against.
+  const expectedShell = screen.gated ? 'landing' : expectDesktop ? 'desktop' : 'companion';
+  if (m.shell !== expectedShell) problems.push(`shell=${m.shell}, expected ${expectedShell}`);
   if (m.docWidth > m.vw + 1) problems.push(`page scrolls sideways (${m.docWidth} > ${m.vw})`);
   if (m.tooWideCount) problems.push(`${m.tooWideCount} element(s) past the viewport: ${m.tooWide.join('; ')}`);
   if (m.sideScrollers.length) problems.push(`sideways scroller(s): ${m.sideScrollers.join(', ')}`);
   if (Math.abs(m.bodyHeight - m.docHeight) > 1) problems.push(`body is a scroller (${m.bodyHeight} vs ${m.docHeight})`);
+
+  if (screen.gated) {
+    if (m.smallCount) problems.push(`${m.smallCount} landing target(s) under 44×44: ${m.small.join('; ')}`);
+    // The top-35% rule is the PHONE layout's contract (docs/DESIGN-SYSTEM.md
+    // "Entry: landing and orientation") — the workstation layout centres its
+    // copy in a two-column hero instead, so it never claims that number.
+    if (!expectDesktop && m.firstContentTop !== null && m.firstContentTop > m.vh * 0.35) {
+      problems.push(`landing H1 starts at ${m.firstContentTop}px (${Math.round((m.firstContentTop / m.vh) * 100)}% down a ${m.vh}px screen, expected <=35%)`);
+    }
+  }
 
   if (m.shell === 'companion') {
     if (m.hasTable) problems.push('a <table> is rendered on the companion');
@@ -209,14 +249,42 @@ async function main() {
     try {
       for (const cell of CELLS) {
         const context = await browser.newContext({ ...cell.device });
+        await seedPastEntryGate(context);
         const page = await context.newPage();
         if (cell.forced) {
-          // Ask for the full desktop view exactly as a visitor does.
+          // Ask for the full desktop view exactly as a visitor does. `?view=`
+          // is itself a deep link (src/utils/entryGate.js), so this also
+          // bypasses the landing/onboarding gate regardless of seeding.
           await page.goto(`${BASE_URL}/?view=desktop`, { waitUntil: 'networkidle' });
         }
         const v = cell.device.viewport;
         console.log(`\n== ${cell.id}  (${v.width}×${v.height}${cell.forced ? ', full desktop view forced' : ''})`);
         for (const screen of SCREENS) {
+          // A forced-desktop cell reaches the workstation shell through a
+          // deep link, which always bypasses the gate — there is no way to
+          // see the real landing there, and no forced mode for it to differ
+          // by, so this cell simply skips the `landing` screen.
+          if (screen.gated && cell.forced) continue;
+
+          if (screen.gated) {
+            // The gate itself, on a context NO seeding has touched.
+            const freshContext = await browser.newContext({ ...cell.device });
+            const freshPage = await freshContext.newPage();
+            await freshPage.goto(BASE_URL, { waitUntil: 'networkidle' });
+            await freshPage.evaluate(() => document.fonts.ready);
+            await freshPage.waitForTimeout(150);
+            const m = await freshPage.evaluate(measure);
+            const problems = judge(cell, screen, m);
+            checks += 1;
+            if (problems.length) failures += 1;
+            console.log(`${problems.length ? '✗' : '✓'} ${screen.id.padEnd(10)} shell=${m.shell.padEnd(9)} layout=${m.vw}×${m.vh} chrome=${m.chrome}px first=${m.firstContentTop ?? '—'}px${problems.length ? `\n    - ${problems.join('\n    - ')}` : ''}`);
+            if (SHOTS) {
+              await freshPage.screenshot({ path: join(SHOT_DIR, `${cell.id}--${screen.id}.png`), fullPage: false });
+            }
+            await freshContext.close();
+            continue;
+          }
+
           await page.goto(`${BASE_URL}/${screen.query ? `?${screen.query}` : ''}`, { waitUntil: 'networkidle' });
           await page.evaluate(() => document.fonts.ready);
           await page.waitForTimeout(150);

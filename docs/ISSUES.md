@@ -5,15 +5,6 @@ needed); the build sequence lives in `BUILD_PLAN.md`.
 
 ## Open
 
-### ISSUE-003 · No landing gate, no onboarding
-**Found** 2026-09-19. **Visible:** yes, on both surfaces. The app opens
-straight into the ledger (desktop) or Attention (phone). Plan: a
-`sessionStorage`-scoped landing stating "mock data · the engine is private",
-and a four-beat orientation (one request → one directive → the boundary → the
-ticket), designed separately for the phone. Sign-out must clear the flag. The
-mobile sweep carries this as its one PENDING line (point 8, the tour's first
-spotlight).
-
 ### ISSUE-004 · Release gate suite only partly ported
 **Found** 2026-09-19, updated 2026-09-21. **Visible:** no — latent. In place:
 `test:unit` (164), `lint`, `build`, `test:sweep:mobile` (47 checks + a
@@ -36,9 +27,27 @@ viewport sweep checks shell, chrome, overflow and the way back in every cell,
 but does NOT yet assert that a desk-only route stays desk-only in every cell
 below the workstation tier — the exact defect found in Ops at 721–979px. Janus
 has one breakpoint shared by JS and CSS, so it is believed absent, not proven.
-(c) No phone-sized first run (ISSUE-003).
+(c) CLOSED 09-21 — the phone-sized first run exists (ISSUE-003).
 
 ## Closed
+
+- 2026-09-21 · **ISSUE-003 · no landing gate, no onboarding.** Now a landing
+  (the two faces side by side on a workstation, stacked and full-bleed on the
+  companion; every id on Fabric's face read off the anchor ledger entry) and a
+  four-beat orientation — one request in, exactly one directive out, the
+  boundary, the ticket — as a dialog on the workstation and one beat per
+  screen on the phone, from ONE `beats.js` so the two can differ only in
+  chrome. The landing flag is `sessionStorage`, the orientation flag
+  `localStorage`; Skip and Escape count as done; "Replay the introduction"
+  (top bar, More sheet) clears both. A deep link (`?view=`, `?d=`) bypasses
+  the gate: a shared link's promise is the record, and the standing "Mock
+  data" notice already carries the honesty line. The mobile sweep's pending
+  check 8 is now four real checks on an unseeded context (52/52); the
+  viewport sweep looks at the landing in every unforced cell (92/92).
+  Reviewed from captures, then corrected: the workstation copy hugged the
+  left edge of a 34rem face, a portrait tablet gave Fabric's face 70% of the
+  screen, beat 2 said the model "classifies", and beat 4's figure was a bare
+  bullet — it now shows what the caller holds beside what the ticket carries.
 
 - 2026-09-21 · **ISSUE-006 · tablet had not been looked at.** Owner: "portrait
   and landscape on both mobile and tablet need to be verified as well as full

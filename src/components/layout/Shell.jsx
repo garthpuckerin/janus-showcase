@@ -11,6 +11,7 @@ export function Shell({
   pageTitle,
   showBackToPhone = false,
   onBackToPhone,
+  onReplayIntro,
   children,
 }) {
   const [theme, setTheme] = useTheme();
@@ -28,6 +29,7 @@ export function Shell({
         onThemeChange={setTheme}
         showBackToPhone={showBackToPhone}
         onBackToPhone={onBackToPhone}
+        onReplayIntro={onReplayIntro}
       />
       <main className="app-main" id="main-content">
         <div className="app-main__inner">{children}</div>

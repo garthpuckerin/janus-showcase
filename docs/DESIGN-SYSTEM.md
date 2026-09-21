@@ -279,3 +279,108 @@ matches the sibling console. `[data-theme="dark"]` is a full theme, toggled in
 the topbar, persisted in `sessionStorage`, and forced by `?theme=dark` (the
 reveal wall's cards are dark, so the wall preview, OG card and teaser are
 captured with `?theme=dark`; in-page case-study figures may be light).
+
+## Entry: landing and orientation
+
+ISSUE-003. Before ISSUE-003, the app opened straight into the ledger
+(desktop) or Attention (phone) — no statement that this is mock data over a
+private engine, and no orientation to the vocabulary (directive, boundary,
+ticket) before the operator hits it cold.
+
+**The gate** (`src/utils/entryGate.js`, unit-tested directly; wired to the DOM
+by `src/hooks/useEntryGate.js`) resolves one of three stages:
+
+- `landing` — not yet entered this session.
+- `onboarding` — entered, but the four-beat orientation is unseen.
+- `app` — the real thing.
+
+Two flags carry it, in two different storages **on purpose**:
+`sessionStorage['janus:entered'] = '1'` (the landing is a per-VISIT gate — a
+new tab or a later session sees it again) and
+`localStorage['janus:onboarded'] = 'done'` (the orientation is a per-BROWSER,
+one-time thing — a reload or a new tab never re-nags once it has been seen or
+skipped). Skip and Escape both write `done`; there is no partial-credit
+state. These are a contract with the sweep scripts
+(`scripts/mobile-sweep.mjs`, `scripts/sweep-advisor-matrix.mjs`,
+`scripts/viewport-sweep.mjs`), which seed both flags via
+`context.addInitScript` in every context except the ones deliberately
+exercising the gate itself — do not rename either key or its value.
+
+**A deep link always bypasses the gate** (`isDeepLink`: a `d` or a `view`
+query param, any value, including the literal `desktop` layout switch) and
+resolves straight to `app`, regardless of the flags. A shared or case-study
+link's promise IS the record — a recipient who clicks `/?d=<id>` must see
+that decision, not a splash screen — and the standing "Mock data · engine is
+private" notice in the app bar/top bar already carries the honesty line on
+every other screen, so nothing is lost by skipping the landing for it.
+
+**The landing** (`src/views/LandingView.jsx`, `src/styles/landing.css`) is
+one screen, no scrolling, at 1280×800 or at 390×664: the `Wordmark`, the H1
+"Janus decides. Fabric acts.", the one-paragraph pitch, the honesty line as
+visible text (never a tooltip), and one primary button, "Enter the console"
+(ink fill, canvas text, ≥44px tall, autofocused). It carries the two-faces
+device at hero scale — the one deliberate exception to "no centered hero
+layouts" above, because the device itself is the content here, not
+decoration. `useWorkstation().isWorkstation` (the same hook and breakpoint
+the rest of the app uses — never a second breakpoint) picks between two
+layouts, both built from the SAME markup order (copy first):
+
+- **Workstation**: light face and dark face side by side, split by the one
+  VERTICAL seam in the app (a left rule instead of a top one, the label read
+  top-to-bottom) — every other use of the seam stacks Janus's side above
+  Fabric's, but this is the only side-by-side use of the device.
+- **Companion**: the same two faces stacked, seam horizontal as usual, the
+  dark face full-bleed beneath the copy (left 0, right = viewport width).
+
+The dark face shows a compact, panel-toned rendition of the anchor scenario's
+identity chain (`LEDGER[0]`, `LandingIdentityStrip.jsx`) — request → directive
+→ ticket → outcome, every value read off the real ledger entry, never typed.
+It is its own small component rather than the shared `IdentityChain`, which
+hardcodes light-canvas colours (every other use of it sits on Janus's side,
+above the seam).
+
+**The orientation** is four fixed beats — "One request in" · "Exactly one
+directive out" · "The boundary" · "The ticket" — with their copy and one
+small derived figure per beat defined ONCE
+(`src/components/onboarding/beats.js`, `BeatFigure.jsx`) and shared by two
+chrome-only presentations:
+
+- **Desktop** (`OrientationDialog.jsx`): a centred modal, `role="dialog"
+  aria-modal="true"`, max width ~560px — NOT a spotlight tour, because the
+  four beats are self-contained content, not callouts pointing at live UI.
+  Focus is trapped inside while open and restored to whatever had it on
+  close; Escape finishes the tour, same as Skip. The app behind it is
+  `inert` while it is open.
+- **Phone** (`OrientationSteps.jsx`): its own FULL-SCREEN surface — it mounts
+  INSTEAD of `CompanionShell`, not on top of it, so there is no app bar or
+  bottom tab bar underneath it. One beat per screen, reusing the Advisor
+  wizard's pinned action bar (`WizardActionBar`) for Next/Back; "Skip" is a
+  separate ≥44×44 text button in the header, kept out of the pinned bar so it
+  never sits where a thumb expects Back or Next. In a short landscape
+  viewport the action bar un-pins with the rest of the companion's wizard
+  chrome (`companion-landscape.css`).
+
+Domain rules for the beats' copy: never "the AI decides", "autonomous agent",
+a confidence number, a claim that continuations expire, are single-use or
+have replay protection, a claim that Janus ships a model/provider adapter, or
+"Activated" as a description of a directive.
+
+**Replay.** "Replay the introduction" — a plain button beside the theme/
+density toggles in the desktop `TopBar`, and a row in the phone `MoreSheet`
+— clears both flags and strips `d`/`view` from the URL (`history.replaceState`,
+so a stale deep link cannot immediately re-bypass the landing it just
+returned to), landing back on the gate's own first stage.
+
+**The mobile sweep's point 8** (`scripts/mobile-sweep.mjs`,
+`runOnboardingChecks`) is the one context in that file that runs UNSEEDED —
+every other context seeds past the gate. It checks: the landing's H1 in the
+top 35% and its primary button ≥44×44 fully on the first screen (8a); after
+entering, the phone orientation is its own full-screen surface with no
+desktop dialog present and its step heading in the top 35% (8b); stepping
+through all four beats lands in the app with the bottom tabs visible, and a
+reload never re-shows the landing or the orientation (8c); and Replay from
+More returns to the landing (8d). `scripts/viewport-sweep.mjs` adds a
+`landing` screen, judged by the same overflow/chrome/first-content floor
+every other screen uses, on its own unseeded context per cell — forced-
+desktop cells skip it, because a deep link always bypasses the gate and the
+landing has no forced-desktop mode to differ by.

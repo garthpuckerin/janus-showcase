@@ -40,7 +40,15 @@ function activeTabFor(view) {
  * a fixed bottom tab bar. Desktop's `Sidebar`/`TopBar` are never imported
  * here, let alone mounted.
  */
-export function CompanionShell({ view, selectedId, onNavigate, onOpenDecision, onCloseDecision, onForceDesktop }) {
+export function CompanionShell({
+  view,
+  selectedId,
+  onNavigate,
+  onOpenDecision,
+  onCloseDecision,
+  onForceDesktop,
+  onReplayIntro,
+}) {
   const [moreOpen, setMoreOpen] = useState(false);
   const [theme, setTheme] = useTheme();
   const [density, setDensity] = useDensity();
@@ -98,6 +106,7 @@ export function CompanionShell({ view, selectedId, onNavigate, onOpenDecision, o
         density={density}
         onDensityChange={setDensity}
         onOpenDesktop={onForceDesktop}
+        onReplayIntro={onReplayIntro}
       />
     </div>
   );

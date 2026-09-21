@@ -1,0 +1,79 @@
+/* Phone orientation (ISSUE-003): FULL-SCREEN, one beat per screen. This
+   replaces the whole companion shell while onboarding runs — no app bar, no
+   bottom tab bar — so there is nothing behind it to distinguish it from a
+   dedicated screen (the mobile sweep asserts exactly that). Reuses
+   `.wizard-actionbar` (companion-advisor.css) for the pinned Next/Back
+   control; the two rules here just remove the bottom-tab-bar clearance that
+   class normally assumes, since there is no tab bar underneath it here. */
+
+.orientation-steps {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-canvas);
+}
+
+.orientation-steps__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.orientation-steps__progress {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.orientation-steps__skip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-ink-muted);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.orientation-steps__skip:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-ink);
+}
+
+.orientation-steps__screen {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: 0 var(--space-4);
+  padding-bottom: calc(4.75rem + var(--space-4));
+}
+
+.orientation-steps__title {
+  font-size: var(--text-2xl);
+}
+
+.orientation-steps__body {
+  margin: 0;
+  color: var(--color-ink-muted);
+}
+
+.orientation-steps__figure {
+  margin-top: var(--space-2);
+}
+
+/* No bottom tab bar to clear here — pin the reused wizard action bar to the
+   very bottom of the screen instead of the 3.5rem tab-bar gap it normally
+   leaves clear. */
+.orientation-steps .wizard-actionbar {
+  bottom: env(safe-area-inset-bottom);
+}

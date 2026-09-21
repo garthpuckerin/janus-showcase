@@ -18,6 +18,7 @@ export function MoreSheet({
   density,
   onDensityChange,
   onOpenDesktop,
+  onReplayIntro,
 }) {
   const headingId = useId();
   const dialogRef = useRef(null);
@@ -94,6 +95,10 @@ export function MoreSheet({
 
           <button type="button" className="companion-sheet__row" onClick={onOpenDesktop}>
             Open the desktop layout
+          </button>
+
+          <button type="button" className="companion-sheet__row" onClick={onReplayIntro}>
+            Replay the introduction
           </button>
 
           {DESK_ONLY_VIEWS.map((id) => (

@@ -57,7 +57,8 @@
     top: 2.75rem;
   }
 
-  .advisor-wizard {
+  .advisor-wizard,
+  .orientation-steps__screen {
     padding-bottom: 0;
   }
 

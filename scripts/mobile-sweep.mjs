@@ -10,8 +10,10 @@
  * against what the app has today; point 6 (the decision-story stepper) now
  * runs against three real ledger entries, picked by PROPERTY at runtime
  * (a ticket, a Fabric rejection, a pre-matrix failure) rather than by
- * hardcoded id. Point 8 (the onboarding tour) is not built yet and prints
- * as an explicit PENDING line rather than silently passing or failing.
+ * hardcoded id. Point 8 (the landing/onboarding gate, ISSUE-003) now runs on
+ * its own DELIBERATELY UNSEEDED context (`runOnboardingChecks`) — every
+ * other context in this file seeds `janus:entered` / `janus:onboarded` via
+ * `context.addInitScript` so the checks above see the app, not the gate.
  *
  * `--self-test` is the honesty check the build brief asks for: it points
  * the SAME check functions at the desktop shell forced onto a phone
@@ -37,6 +39,22 @@ const SELF_TEST = process.argv.includes('--self-test');
 const TOUCH_TARGET_ALLOWLIST = [];
 
 const INTERACTIVE_SELECTOR = 'button, a[href], select, input:not([type=hidden]), textarea, summary, [role="button"]';
+
+/* ISSUE-003 added a landing/onboarding gate in front of every route. Every
+ * context below except the ones for point 8 (which exercise the gate itself)
+ * must get PAST it before the existing checks run, or they would all see the
+ * landing screen instead of the app. `janus:entered` / `janus:onboarded` are
+ * the exact contract values `src/utils/entryGate.js` reads. */
+function seedPastEntryGate(context) {
+  return context.addInitScript(() => {
+    try {
+      window.sessionStorage.setItem('janus:entered', '1');
+      window.localStorage.setItem('janus:onboarded', 'done');
+    } catch {
+      // Storage blocked — nothing to seed; the gate's own try/catch handles it.
+    }
+  });
+}
 
 function runVite(args) {
   return new Promise((resolveRun, rejectRun) => {
@@ -276,9 +294,6 @@ const outcomes = [];
 function record(id, { ok, detail }) {
   outcomes.push({ id, status: ok ? 'pass' : 'fail', detail });
 }
-function pendingLine(id, detail) {
-  outcomes.push({ id, status: 'pending', detail });
-}
 
 async function checksOnScreen(page, label, { viewport, cardSelector, includeCardCheck }) {
   record(`1 · ${label}: desktop chrome absent`, await evalNoDesktopChrome(page));
@@ -293,6 +308,7 @@ async function checksOnScreen(page, label, { viewport, cardSelector, includeCard
 async function runNormalSweep(browser) {
   const iphone = devices['iPhone 13'];
   const context = await browser.newContext({ ...iphone });
+  await seedPastEntryGate(context);
   const page = await context.newPage();
   const viewport = iphone.viewport;
 
@@ -379,7 +395,87 @@ async function runNormalSweep(browser) {
     });
   }
 
-  pendingLine('8 · PENDING: onboarding first spotlight', 'no onboarding/tour overlay exists yet in this build');
+  await context.close();
+}
+
+/* ---------- Point 8: the landing/onboarding gate (ISSUE-003) ----------
+ * Runs on a DELIBERATELY UNSEEDED context — this is the one place in the
+ * sweep that must see the real first-run gate, not skip past it. */
+async function runOnboardingChecks(browser) {
+  const iphone = devices['iPhone 13'];
+  const context = await browser.newContext({ ...iphone });
+  const page = await context.newPage();
+  const viewport = iphone.viewport;
+
+  await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(200);
+
+  // 8a · the landing screen itself.
+  {
+    const h1Box = await page.locator('.landing h1').first().boundingBox();
+    const buttonBox = await page.locator('.landing__enter').boundingBox();
+    const chrome = await evalNoDesktopChrome(page);
+    const hygiene = await evalLayoutHygiene(page, viewport.width);
+    const okH1 = Boolean(h1Box) && h1Box.y <= viewport.height * 0.35;
+    const okButton =
+      Boolean(buttonBox) &&
+      buttonBox.width >= 44 &&
+      buttonBox.height >= 44 &&
+      buttonBox.y >= 0 &&
+      buttonBox.y + buttonBox.height <= viewport.height;
+    record('8a · Landing: H1 in top 35%, primary button ≥44×44 fully on the first screen, no desktop chrome, no overflow', {
+      ok: okH1 && okButton && chrome.ok && hygiene.ok,
+      detail: `h1Top=${h1Box ? Math.round(h1Box.y) : 'n/a'} (35% of ${viewport.height}=${Math.round(viewport.height * 0.35)}) button=${buttonBox ? `${Math.round(buttonBox.width)}×${Math.round(buttonBox.height)} @y=${Math.round(buttonBox.y)}` : 'missing'}; chrome=${chrome.detail}; hygiene=${hygiene.detail}`,
+    });
+  }
+
+  // 8b · tap "Enter the console" — the phone orientation must be its own
+  // full-screen surface, never the desktop's centred dialog.
+  await page.locator('.landing__enter').click();
+  await page.waitForTimeout(200);
+  {
+    const dialogCount = await page.locator('.orientation-dialog').count();
+    const headingBox = await page.locator('#orientation-steps-heading').boundingBox();
+    const okHeading = Boolean(headingBox) && headingBox.y <= viewport.height * 0.35;
+    const targets = await evalTouchTargets(page, TOUCH_TARGET_ALLOWLIST);
+    record('8b · Orientation (phone): full-screen one-beat-per-screen view, no desktop dialog, step heading in top 35%, every target ≥44×44', {
+      ok: dialogCount === 0 && okHeading && targets.ok,
+      detail: `.orientation-dialog count=${dialogCount}; headingTop=${headingBox ? Math.round(headingBox.y) : 'n/a'} (35%=${Math.round(viewport.height * 0.35)}); targets=${targets.detail}`,
+    });
+  }
+
+  // 8c · step through all four beats (3× "Next", 1× "Open the console") —
+  // lands in the app with the bottom tabs visible, and a reload never re-nags.
+  for (let i = 0; i < 4; i += 1) {
+    await page.locator('.wizard-actionbar__primary').click();
+    await page.waitForTimeout(150);
+  }
+  const tabsAfterFinish = await page.locator('.companion-tabs').count();
+  record('8c · Stepping through all four beats lands in the app with the bottom tabs visible', {
+    ok: tabsAfterFinish > 0,
+    detail: `.companion-tabs count=${tabsAfterFinish}`,
+  });
+
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.waitForTimeout(200);
+  const landingAfterReload = await page.locator('.landing').count();
+  const orientationAfterReload = await page.locator('.orientation-steps').count();
+  const tabsAfterReload = await page.locator('.companion-tabs').count();
+  record('8c · A reload after finishing onboarding shows neither the landing nor the orientation again', {
+    ok: landingAfterReload === 0 && orientationAfterReload === 0 && tabsAfterReload > 0,
+    detail: `.landing=${landingAfterReload} .orientation-steps=${orientationAfterReload} .companion-tabs=${tabsAfterReload}`,
+  });
+
+  // 8d · "Replay the introduction" (More sheet) returns to the landing.
+  await page.locator('.companion-tabs').getByRole('button', { name: 'More', exact: true }).click();
+  await page.waitForSelector('.companion-sheet');
+  await page.getByRole('button', { name: 'Replay the introduction' }).click();
+  await page.waitForTimeout(200);
+  const landingAfterReplay = await page.locator('.landing').count();
+  record('8d · "Replay the introduction" from More returns to the landing', {
+    ok: landingAfterReplay > 0,
+    detail: `.landing count=${landingAfterReplay}`,
+  });
 
   await context.close();
 }
@@ -389,6 +485,7 @@ async function runNormalSweep(browser) {
 async function runSelfTest(browser) {
   const iphone = devices['iPhone 13'];
   const context = await browser.newContext({ ...iphone });
+  await seedPastEntryGate(context);
   const page = await context.newPage();
   const viewport = iphone.viewport;
 
@@ -436,6 +533,7 @@ async function main() {
         await runSelfTest(browser);
       } else {
         await runNormalSweep(browser);
+        await runOnboardingChecks(browser);
       }
     } finally {
       await browser.close();

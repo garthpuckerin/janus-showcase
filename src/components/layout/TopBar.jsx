@@ -22,6 +22,7 @@ export function TopBar({
   onThemeChange,
   showBackToPhone = false,
   onBackToPhone,
+  onReplayIntro,
 }) {
   return (
     <header className="app-topbar">
@@ -35,6 +36,9 @@ export function TopBar({
             Back to the phone layout
           </button>
         )}
+        <button type="button" className="button button--ghost" onClick={onReplayIntro}>
+          Replay the introduction
+        </button>
         <span className="chip chip--neutral" role="status">
           Mock data · engine is private
         </span>
