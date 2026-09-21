@@ -1,26 +1,16 @@
-import { SURFACE_FORCE_VALUE } from '../../../utils/surface.js';
-
 /**
- * No re-run controls on the phone: one line, and a link to this same
- * decision on the desktop layout. `CompanionShell.jsx` never threads
- * `onForceDesktop` this deep, and a second `useWorkstation()` hook instance
- * here could write `sessionStorage` but could not make `App`'s own instance
- * re-render — so this builds the exact URL `useWorkstation` already reads on
- * mount (`?view=desktop`, the literal `SURFACE_FORCE_VALUE`) with `?d=`
- * pointing at this scenario, and navigates there directly.
+ * No re-run controls on the phone: one line, and a way to this same decision
+ * on the desktop layout. The handler comes from `CompanionShell`, which owns
+ * both halves of the move — put the decision on the workstation's route, then
+ * switch the shell in place. The first version called `location.assign` here,
+ * a full reload that threw away in-memory state; the white-glove sweep caught
+ * it once it learned to tell a real `load` from a layout switch (2026-09-21).
  */
-export function StoryDeskLink({ scenarioId }) {
-  const openDesktop = () => {
-    const params = new URLSearchParams(window.location.search);
-    params.set('view', SURFACE_FORCE_VALUE);
-    params.set('d', scenarioId);
-    window.location.assign(`${window.location.pathname}?${params.toString()}`);
-  };
-
+export function StoryDeskLink({ onOpenDesktop }) {
   return (
     <div className="story-rerun">
       <p className="page-framing">Re-running a request against a different caller is a workstation action.</p>
-      <button type="button" className="button button--ghost" onClick={openDesktop}>
+      <button type="button" className="button button--ghost" onClick={onOpenDesktop}>
         Open the desktop layout
       </button>
     </div>

@@ -18,7 +18,7 @@ export function OutcomeBody({ fabric }) {
       <p className="story-line">
         Outcome id: <code>{outcome.outcome_id}</code>
       </p>
-      <h4>Acceptance</h4>
+      <h2 className="face-subheading">Acceptance</h2>
       <ul className="trace-list">
         {outcome.acceptance.map((item) => (
           <li key={item.test} className="trace-item trace-item--pass">

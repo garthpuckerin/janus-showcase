@@ -14,7 +14,10 @@
     "test:sweep:mobile": "node scripts/mobile-sweep.mjs",
     "test:sweep:advisor-matrix": "node scripts/sweep-advisor-matrix.mjs",
     "test:sweep:viewport": "node scripts/viewport-sweep.mjs",
-    "test:release": "npm run lint && npm run build && npm run test:unit && npm run test:sweep:mobile && npm run test:sweep:advisor-matrix && npm run test:sweep:viewport"
+    "test:sweep:whiteglove": "node scripts/whiteglove-sweep.mjs",
+    "test:e2e": "playwright test",
+    "capture:og": "node scripts/capture-og.mjs",
+    "test:release": "npm run lint && npm run build && npm run test:unit && npm run test:sweep:mobile && npm run test:sweep:advisor-matrix && npm run test:sweep:viewport && npm run test:sweep:whiteglove && npm run test:e2e"
   },
   "dependencies": {
     "lucide-react": "^0.294.0",
@@ -22,6 +25,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^9.39.5",
     "@playwright/test": "^1.52.0",
     "@vitejs/plugin-react": "^4.2.1",

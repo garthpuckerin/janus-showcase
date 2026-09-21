@@ -2,6 +2,8 @@ node_modules
 dist
 dist-advisor
 dist-viewport
+dist-e2e
+dist-gates
 .vercel
 .env
 .env.*

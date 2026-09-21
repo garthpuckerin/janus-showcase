@@ -86,7 +86,7 @@ export function AdvisorView() {
             </AdvisorStepCard>
           </div>
 
-          <button type="button" className="button button--secondary" onClick={walk.handleReset}>
+          <button type="button" className="button button--secondary" onClick={walk.handleReset} disabled={walk.isPristine}>
             Reset
           </button>
         </div>

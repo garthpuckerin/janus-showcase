@@ -1,5 +1,5 @@
 import { PARTICIPATION, MODEL_RESULTS } from '../../../domain/matrix.js';
-import { MATRIX_PRESETS } from '../../matrix/matrixPresets.js';
+import { MATRIX_PRESETS, presetIsActive } from '../../matrix/matrixPresets.js';
 
 /** The lookup's four axes as native controls, stacked — never the desktop's
  *  segmented-button groups, which are mouse-sized and mean choosing among
@@ -59,7 +59,13 @@ export function MatrixLookupControls({ routePresent, participation, modelResult,
           Load a canonical policy&rsquo;s settings
         </span>
         {MATRIX_PRESETS.map((preset) => (
-          <button key={preset.key} type="button" className="button button--secondary" onClick={() => onPreset(preset)}>
+          <button
+            key={preset.key}
+            type="button"
+            className="button button--secondary"
+            aria-pressed={presetIsActive(preset, { routePresent, participation, adviseAllowed })}
+            onClick={() => onPreset(preset)}
+          >
             {preset.label}
           </button>
         ))}

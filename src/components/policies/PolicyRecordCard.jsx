@@ -44,7 +44,7 @@ export function PolicyRecordCard({ policy, kind }) {
   return (
     <article className="card policy-card">
       <div className="card__header policy-card__header">
-        <h3 className="policy-card__ref mono">{policyRefLabel(policy.policy_id, policy.version)}</h3>
+        <h2 className="policy-card__ref mono">{policyRefLabel(policy.policy_id, policy.version)}</h2>
         <span className="chip chip--info mono">{kind === 'persona' ? policy.persona_type : 'action policy'}</span>
       </div>
 

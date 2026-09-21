@@ -58,6 +58,8 @@ export function DraftValidator() {
   }, []);
 
   const handleReset = useCallback(() => setDraft(scaffoldPersonaPolicy()), []);
+  // Disabled until the draft differs from the scaffold — see RerunPanel.
+  const isScaffold = useMemo(() => JSON.stringify(draft) === JSON.stringify(scaffoldPersonaPolicy()), [draft]);
 
   return (
     <div className="card policy-draft">
@@ -105,7 +107,7 @@ export function DraftValidator() {
               Route lead.received to lead.crm.contact-upsert@1
             </label>
           </div>
-          <button type="button" className="button button--secondary" onClick={handleReset}>
+          <button type="button" className="button button--secondary" onClick={handleReset} disabled={isScaffold}>
             Reset draft
           </button>
         </div>

@@ -18,7 +18,7 @@ import { StoryDeskLink } from './StoryDeskLink.jsx';
  *  chain in the dark region's footer, and the no-re-run line. Kept separate
  *  from `DecisionStoryView` so the not-found/error paths there never import
  *  this much of the domain vocabulary. */
-export function StoryContent({ entry }) {
+export function StoryContent({ entry, onOpenDesktop }) {
   const { scenario, evaluation, fabric } = entry;
   const { directive, diagnostics, trace } = evaluation;
   const matrixReached = diagnostics.matrix_row !== null;
@@ -69,7 +69,7 @@ export function StoryContent({ entry }) {
         <StoryIdentityChain request={scenario.request} directive={directive} ticket={ticket} outcome={outcome} />
       </div>
 
-      <StoryDeskLink scenarioId={scenario.id} />
+      <StoryDeskLink onOpenDesktop={onOpenDesktop} />
     </>
   );
 }

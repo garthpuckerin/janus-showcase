@@ -86,6 +86,18 @@ export function useAdvisorWalk() {
     setClarifyOutcome(null);
   }, []);
 
+  // Nothing to reset until something differs from the opening state — the
+  // Reset button is disabled on it rather than being a live control that does
+  // nothing.
+  const isPristine =
+    askOutcome === null &&
+    clarifyOutcome === null &&
+    askPortKey === DEFAULT_ASK_PORT_KEY &&
+    clarifyPortKey === DEFAULT_ADVISOR_PORT_KEY &&
+    tamperMode === 'none' &&
+    Object.keys(clarifyValues).length === 0 &&
+    Object.entries(INITIAL_ASK_VALUES).every(([key, value]) => askValues[key] === value);
+
   const askExplanation = useMemo(
     () => (askOutcome ? matrixRowExplanation(askOutcome.evaluation.diagnostics.matrix_row) : null),
     [askOutcome],
@@ -117,5 +129,6 @@ export function useAdvisorWalk() {
     handleClarifyFieldChange,
     handleClarifySubmit,
     handleReset,
+    isPristine,
   };
 }

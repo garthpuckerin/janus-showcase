@@ -35,7 +35,7 @@ export function TrustedCallerCard({ directive, fabric, callerId }) {
       </p>
       <div className="scope-columns">
         <div>
-          <h4>Granted to caller</h4>
+          <h3 className="face-subheading">Granted to caller</h3>
           <ul className="scope-list">
             {grantedScopes.map((scope) => {
               const onTicket = allowedScopes.includes(scope);
@@ -49,7 +49,7 @@ export function TrustedCallerCard({ directive, fabric, callerId }) {
           </ul>
         </div>
         <div>
-          <h4>On the ticket</h4>
+          <h3 className="face-subheading">On the ticket</h3>
           {ticket ? (
             <ul className="scope-list">
               {allowedScopes.map((scope) => (

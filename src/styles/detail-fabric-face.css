@@ -2,7 +2,7 @@
    `.panel-face` region drawn full width below the seam. `.panel-face .card`
    already swaps in `--color-panel-raised` (components.css) — this file only
    overrides the LIGHT-canvas-tuned pieces of the shared vocabulary
-   (`.eyebrow`, `.card__header`, `.not-applicable`, `<h4>`) so they read
+   (`.eyebrow`, `.card__header`, `.not-applicable`, `.face-subheading`) so they read
    correctly against the dark panel, plus the layout and content specific to
    the trusted-caller/ticket comparison and the outcome. */
 
@@ -53,7 +53,7 @@
   color: var(--color-panel-muted);
 }
 
-.fabric-face h4 {
+.face-subheading {
   margin: var(--space-3) 0 var(--space-2);
   color: var(--color-panel-muted);
   font-size: 0.78rem;

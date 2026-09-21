@@ -58,7 +58,14 @@ export function RerunPanel({ defaultCallerId, defaultPortKey, onRun, onReset }) 
             </select>
           </div>
         </div>
-        <button type="button" className="button button--secondary" onClick={handleReset}>
+        {/* Nothing to reset until a field differs from the recorded request —
+            an enabled button that does nothing is a dead control. */}
+        <button
+          type="button"
+          className="button button--secondary"
+          onClick={handleReset}
+          disabled={callerId === defaultCallerId && portKey === defaultPortKey}
+        >
           Reset
         </button>
       </div>

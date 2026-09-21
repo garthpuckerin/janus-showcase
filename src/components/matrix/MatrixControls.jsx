@@ -1,5 +1,5 @@
 import { PARTICIPATION, MODEL_RESULTS } from '../../domain/matrix.js';
-import { MATRIX_PRESETS } from './matrixPresets.js';
+import { MATRIX_PRESETS, presetIsActive } from './matrixPresets.js';
 
 /** One labelled `.segmented` group of buttons — a route, a participation
  *  level or a model result — mirroring a domain constant, never a
@@ -58,7 +58,15 @@ export function MatrixControls({ routePresent, participation, modelResult, advis
       </div>
       <div className="matrix-controls__presets" role="group" aria-label="Load a canonical policy's settings">
         {MATRIX_PRESETS.map((preset) => (
-          <button key={preset.key} type="button" className="button button--secondary" onClick={() => onPreset(preset)}>
+          // Pressed when the controls already hold this policy's settings — the
+          // state the button would produce, so pressing it again changes nothing.
+          <button
+            key={preset.key}
+            type="button"
+            className="button button--secondary"
+            aria-pressed={presetIsActive(preset, { routePresent, participation, adviseAllowed })}
+            onClick={() => onPreset(preset)}
+          >
             {preset.label}
           </button>
         ))}

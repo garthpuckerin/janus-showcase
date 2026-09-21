@@ -5,18 +5,18 @@ needed); the build sequence lives in `BUILD_PLAN.md`.
 
 ## Open
 
-### ISSUE-004 · Release gate suite only partly ported
-**Found** 2026-09-19, updated 2026-09-21. **Visible:** no — latent. In place:
-`test:unit` (164), `lint`, `build`, `test:sweep:mobile` (47 checks + a
-`--self-test` proving it fails a forced desktop layout),
-`test:sweep:advisor-matrix` (49 checks, same self-test), a WCAG contrast test
-over the tokens for both themes, a colour-literal / gradient gate, an
-orphan-class gate and a scroll-container gate. STILL MISSING: axe-core WCAG
-A/AA e2e on rendered pages at desktop and phone (the contrast test covers
-token PAIRS, not what is actually rendered), the white-glove sweep (text
-defects + inert affordances), the data-coherence gate and `capture-og.mjs`.
-`test:release` now chains lint, build, unit and all three sweeps (mobile,
-advisor-matrix, viewport — 84 cell×screen checks).
+### ISSUE-004 · Release gate suite — what is still not covered
+**Found** 2026-09-19, updated 2026-09-21. **Visible:** no — latent. One
+`npm run test:release` now chains lint, build, 191 unit tests, the mobile
+(52), advisor/matrix (49), viewport (92) and white-glove sweeps and the
+axe-core suite (44 tests; WCAG 2.0/2.1/2.2 A+AA, zero rule exclusions; desktop
+and iPhone 13, both themes; every route, three decision details, the landing,
+every orientation beat, the More sheet, the Advisor wizard). STILL NOT COVERED:
+there is no end-to-end walk of the two signature workflows as a user performs
+them on the workstation (the advisor/matrix sweep walks the Advisor on the
+phone only); and the white-glove sweep probes each control from a fresh load,
+so a control that only matters after another change (a Reset after an edit)
+is proven wired by unit state, not by the sweep.
 
 ### ISSUE-008 · Companion debt measured against the shared benchmark
 **Found** 2026-09-21 by the five-showcase review
@@ -30,6 +30,26 @@ has one breakpoint shared by JS and CSS, so it is believed absent, not proven.
 (c) CLOSED 09-21 — the phone-sized first run exists (ISSUE-003).
 
 ## Closed
+
+- 2026-09-21 · **What the new gates found on their first run** (axe: 4
+  failures; white-glove: 31 findings, 15 once its own false positives were
+  fixed). (1) Muted ink inside Fabric's always-dark face rendered at
+  2.1–3.0:1 in the light theme — three texts reported, 67 rules use the token,
+  so the token is re-mapped inside `.panel-face` once rather than patching
+  three selectors. (2) A not-reached stage was dimmed with `opacity: .5`,
+  halving already-muted text; it is marked by its dashed panel and its own
+  words now. (3) The heading outline skipped levels (h2→h4 on the detail,
+  h1→h4 in the phone story, h1→h3 on Policies): bare `<h4>` styled by element
+  selector became a `.face-subheading` class on the right level. (4) **A real
+  reload:** the phone story's "Open the desktop layout" called
+  `location.assign`; it now puts the decision on the workstation route and
+  switches the shell in place. The sweep first reported EVERY such button as a
+  reload because it inferred one from a lost window global; it now listens for
+  the page's `load` event, which is how the one real case was told from the
+  false ones. (5) Dead-at-rest controls: three Reset buttons did nothing until
+  something had changed (now `disabled` until then), and a matrix preset whose
+  settings were already in force looked unpressed (one `presetIsActive` rule,
+  workstation and phone).
 
 - 2026-09-21 · **ISSUE-003 · no landing gate, no onboarding.** Now a landing
   (the two faces side by side on a workstation, stacked and full-bleed on the

@@ -14,7 +14,7 @@ import ErrorBoundary from '../../components/common/ErrorBoundary.jsx';
  * so a scenario that throws renders the shared danger `DataState`, never a
  * blank screen — `CompanionShell.jsx` does not wrap this route itself.
  */
-export function DecisionStoryView({ scenarioId, onBack }) {
+export function DecisionStoryView({ scenarioId, onBack, onOpenDesktop }) {
   const entry = findLedgerEntry(scenarioId);
 
   return (
@@ -26,7 +26,7 @@ export function DecisionStoryView({ scenarioId, onBack }) {
 
       {entry ? (
         <ErrorBoundary>
-          <StoryContent entry={entry} />
+          <StoryContent entry={entry} onOpenDesktop={onOpenDesktop} />
         </ErrorBoundary>
       ) : (
         <DataState

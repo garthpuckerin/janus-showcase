@@ -11,6 +11,17 @@ export function deriveMatrixSettingsFromPolicy(policy, eventType) {
   };
 }
 
+/** True when the controls already hold exactly what this preset would set —
+ *  the preset button then reads as pressed (one rule for the workstation and
+ *  the phone lookup). The model result is not part of a preset. */
+export function presetIsActive(preset, { routePresent, participation, adviseAllowed }) {
+  return (
+    preset.routePresent === routePresent &&
+    preset.participation === participation &&
+    preset.adviseAllowed === adviseAllowed
+  );
+}
+
 export const MATRIX_PRESETS = Object.freeze(
   PERSONA_POLICIES.map((policy) => {
     const eventType = policy.allowed_event_types[0];

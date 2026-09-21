@@ -63,10 +63,9 @@
   color: var(--color-ink-muted);
 }
 
-.rail-stage--not-reached {
-  opacity: 0.5;
-}
-
+/* A stage the evaluation never reached is marked by its dashed panel and its
+   own "not reached" text — never by opacity, which halved already-muted text
+   to 2.1:1 (axe, 2026-09-21). */
 .rail-stage--not-reached .panel {
   border-style: dashed;
 }

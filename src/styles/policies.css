@@ -19,6 +19,7 @@
 
 .policy-card__ref {
   font-size: var(--text-md);
+  letter-spacing: 0;
   margin: 0;
 }
 

@@ -61,7 +61,15 @@ export function CompanionShell({
       <DeskOnlyState view={view} onOpenDesktop={onForceDesktop} onBackToAttention={() => onNavigate('attention')} />
     );
   } else if (hasOpenDecision) {
-    content = <DecisionStoryView scenarioId={selectedId} onBack={onCloseDecision} />;
+    // The same decision, on the desktop layout, WITHOUT a reload: put it on the
+    // workstation's own route (`view=decisions&d=`) and switch the shell in place.
+    const openThisDecisionOnDesktop = () => {
+      onOpenDecision(selectedId);
+      onForceDesktop();
+    };
+    content = (
+      <DecisionStoryView scenarioId={selectedId} onBack={onCloseDecision} onOpenDesktop={openThisDecisionOnDesktop} />
+    );
   } else if (view === 'decisions') {
     content = <DecisionsFeedView onOpenDecision={onOpenDecision} />;
   } else if (view === 'advisor') {
