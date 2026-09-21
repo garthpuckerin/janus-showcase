@@ -60,6 +60,26 @@
   .decisions-table__title-cell {
     min-width: 14rem;
   }
+
+}
+
+/* A landscape tablet (1024px) leaves 740px of content. Measured there, every
+   column was already at its minimum (141 + 225 + 165 + 190 of 722px), so the
+   title had 225px and each row ran four lines: there was no spare width to
+   hand out. The "When" column folds into the meta line too, which gives the
+   title about 140px more. */
+.decisions-table__compact-only {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .decisions-table .decisions-table__roomy-only {
+    display: none;
+  }
+
+  .decisions-table__compact-only {
+    display: inline;
+  }
 }
 
 .decisions-table tbody tr {

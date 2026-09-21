@@ -30,7 +30,7 @@ export function DecisionsTable({ rows, now, onSelectScenario }) {
         <caption className="visually-hidden">Decision ledger: one row per evaluated request.</caption>
         <thead>
           <tr>
-            <th scope="col">When</th>
+            <th scope="col" className="decisions-table__roomy-only">When</th>
             <th scope="col">Decision · persona policy · event</th>
             <th scope="col">Directive</th>
             <th scope="col" className="decisions-table__wide-only">Matrix row</th>
@@ -43,7 +43,7 @@ export function DecisionsTable({ rows, now, onSelectScenario }) {
             const { scenario, evaluation, fabric } = entry;
             return (
               <tr key={scenario.id} onClick={() => onSelectScenario(scenario.id)}>
-                <td data-label="When" className="decisions-table__when">
+                <td data-label="When" className="decisions-table__when decisions-table__roomy-only">
                   {relativeTimeFromNow(scenario.occurredAt, now)}
                 </td>
                 <td data-label="Decision" className="decisions-table__title-cell">
@@ -73,6 +73,12 @@ export function DecisionsTable({ rows, now, onSelectScenario }) {
                     <span aria-hidden="true"> · </span>
                     <span className="visually-hidden">, model </span>
                     {modelStatusLabel(evaluation.diagnostics.model_status)}
+                    {/* ≤1100px (a landscape tablet) the When column folds in here too. */}
+                    <span className="decisions-table__compact-only">
+                      <span aria-hidden="true"> · </span>
+                      <span className="visually-hidden">, </span>
+                      {relativeTimeFromNow(scenario.occurredAt, now)}
+                    </span>
                   </span>
                 </td>
                 <td data-label="Directive">
