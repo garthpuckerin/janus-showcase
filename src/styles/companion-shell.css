@@ -1,3 +1,6 @@
+@import './companion-advisor.css';
+@import './companion-matrix.css';
+
 /* The phone/tablet companion shell: a compact app bar, scrolling content
    (the document is the only scroller — see tests/scrollContainer.test.js;
    `.companion-shell` is not in that gate's page-level list, so its
@@ -65,11 +68,17 @@
   min-width: 0;
 }
 
-/* Every reused desktop control (Advisor's forms, Matrix's segmented
-   groups) is styled for a mouse-driven `--control-height` of 2.25rem. On
-   the companion every one of those must clear the 44×44 touch-target floor
-   regardless — scoped here so the desktop shell, which never carries this
-   class, is untouched. */
+/* Originally written for the desktop Advisor/Matrix views this shell used to
+   mount directly (their forms and segmented groups are styled for a
+   mouse-driven `--control-height` of 2.25rem). The phone Advisor wizard and
+   Matrix lookup (companion-advisor.css / companion-matrix.css) size their
+   own controls and no longer need this override — but `DeskOnlyState.jsx`'s
+   "Open the desktop layout" / "Back to Attention" buttons (`.button`,
+   `.button--ghost`, rendered for the Policies/Boundary desk-only routes)
+   still do: `.button`'s own `--control-height` is 2.25rem (36px), below the
+   44px floor, and that component has no scoped override of its own. Left in
+   place for that reason — scoped here so the desktop shell, which never
+   carries this class, is untouched. */
 .companion-shell__content .button,
 .companion-shell__content .segmented button,
 .companion-shell__content .field input,

@@ -7,9 +7,11 @@
  * always killed in a `finally`, whether the sweep passes, fails, or throws.
  *
  * Points 1–5 and 7 of the contract's eight-point gate are implemented
- * against what the app has today; 6 and 8 (the decision-story stepper and
- * the onboarding tour) are not built yet and print as explicit PENDING
- * lines rather than silently passing or failing.
+ * against what the app has today; point 6 (the decision-story stepper) now
+ * runs against three real ledger entries, picked by PROPERTY at runtime
+ * (a ticket, a Fabric rejection, a pre-matrix failure) rather than by
+ * hardcoded id. Point 8 (the onboarding tour) is not built yet and prints
+ * as an explicit PENDING line rather than silently passing or failing.
  *
  * `--self-test` is the honesty check the build brief asks for: it points
  * the SAME check functions at the desktop shell forced onto a phone
@@ -21,6 +23,8 @@ import { spawn } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium, devices } from '@playwright/test';
+import { LEDGER } from '../src/data/ledger.js';
+import { explainingStage } from '../src/components/companion/story/storyModel.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const VITE_BIN = join(ROOT, 'node_modules', 'vite', 'bin', 'vite.js');
@@ -190,6 +194,82 @@ async function evalLayoutHygiene(page, viewportWidth) {
   return { ok: problems.length === 0, detail: problems.length ? problems.slice(0, 6).join('; ') : 'no table, no overflow, document is the only scroller' };
 }
 
+/* ---------- Decision-story checks (point 6) ---------- */
+
+async function evalCollapsedHeight(page, viewportHeight) {
+  const scrollHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+  const max = viewportHeight * 3.5;
+  const ok = scrollHeight <= max + 1;
+  return { ok, detail: `${scrollHeight}px vs ≤${Math.round(max)}px (3.5× the ${viewportHeight}px viewport)` };
+}
+
+async function evalExactlyOneOpenExplainingStage(page, expectedStageKey) {
+  const openStages = await page.evaluate(() =>
+    [...document.querySelectorAll('li[data-stage]')]
+      .filter((li) => li.querySelector('details[open]'))
+      .map((li) => li.getAttribute('data-stage')),
+  );
+  const ok = openStages.length === 1 && openStages[0] === expectedStageKey;
+  return {
+    ok,
+    detail: ok
+      ? `exactly one stage open: ${expectedStageKey}`
+      : `open=[${openStages.join(', ')}] expected exactly [${expectedStageKey}]`,
+  };
+}
+
+async function evalDarkFullBleed(page, viewportWidth) {
+  const box = await page.locator('.story-dark').first().boundingBox();
+  if (!box) return { ok: false, detail: '.story-dark not found' };
+  const leftOk = Math.abs(box.x) <= 1;
+  const rightOk = Math.abs(box.x + box.width - viewportWidth) <= 1;
+  return {
+    ok: leftOk && rightOk,
+    detail: `left=${Math.round(box.x)} right=${Math.round(box.x + box.width)} of viewport 0..${viewportWidth}`,
+  };
+}
+
+/* Opens every closed disclosure on the page, one at a time (opening one can
+ * reveal — or shift — another), so check (f) can re-run the overflow gate
+ * against the fully expanded story. */
+async function expandAllDetails(page) {
+  for (;;) {
+    const summary = page.locator('details:not([open]) > summary').first();
+    if ((await summary.count()) === 0) return;
+    await summary.click();
+  }
+}
+
+/** The three decisions the sweep walks for point 6, picked by PROPERTY from
+ *  the real ledger — never a hardcoded id — so the gate stays honest if the
+ *  fixture set is ever reshuffled. */
+function pickStoryCase(predicate, label) {
+  const entry = LEDGER.find(predicate);
+  if (!entry) throw new Error(`mobile-sweep: no ledger entry found for "${label}"`);
+  return { label, entry };
+}
+
+const STORY_CASES = [
+  pickStoryCase((entry) => entry.fabric?.kind === 'ticket', 'a decision that issued a ticket'),
+  pickStoryCase((entry) => entry.fabric?.kind === 'rejection', 'a decision Fabric rejected'),
+  pickStoryCase((entry) => entry.evaluation.trace.some((step) => !step.ok), 'a decision that failed closed pre-matrix'),
+];
+
+async function checkDecisionStory(page, viewport, { label, entry }) {
+  await page.goto(`${BASE_URL}/?view=decisions&d=${entry.scenario.id}`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(200);
+
+  await checksOnScreen(page, `Decision story (${label})`, { viewport, includeCardCheck: false });
+  record(`6a · Decision story (${label}): collapsed ≤3.5 viewports`, await evalCollapsedHeight(page, viewport.height));
+  record(
+    `6b · Decision story (${label}): exactly one open stage = the explaining stage`,
+    await evalExactlyOneOpenExplainingStage(page, explainingStage(entry)),
+  );
+  record(`6c · Decision story (${label}): Fabric's dark region is full-bleed`, await evalDarkFullBleed(page, viewport.width));
+  await expandAllDetails(page);
+  record(`6d · Decision story (${label}): no overflow after opening every disclosure`, await evalLayoutHygiene(page, viewport.width));
+}
+
 /* ---------- Normal sweep ---------- */
 
 const outcomes = [];
@@ -238,7 +318,9 @@ async function runNormalSweep(browser) {
   await checksOnScreen(page, 'More sheet (open)', { viewport, includeCardCheck: false });
   await page.keyboard.press('Escape');
 
-  pendingLine('6 · PENDING: collapsed decision story ≤3.5 viewports', 'the phone decision-story stepper is not built yet (this task ships an honest placeholder)');
+  for (const storyCase of STORY_CASES) {
+    await checkDecisionStory(page, viewport, storyCase);
+  }
 
   // Check 7: desk-only routes, and the escape hatch back to the desktop
   // shell. Each route gets a clean session — otherwise the first route's
@@ -268,6 +350,29 @@ async function runNormalSweep(browser) {
     record(`7 · ?view=${routeName}, "Open the desktop layout" reaches the desktop shell`, {
       ok: sidebarAfter > 0,
       detail: sidebarAfter > 0 ? '.app-sidebar present after the click' : '.app-sidebar still absent',
+    });
+  }
+
+  // 6g · A bare deep link must open the story. Every check above reaches a
+  // decision by tapping a card, which is how `/?d=<id>` silently showing the
+  // Attention list went unnoticed; shared and case-study links use this form.
+  {
+    const target = LEDGER[0].scenario;
+    // A FRESH context: a shared link is opened by someone with no session.
+    // (Check 7 above clicks "Open the desktop layout", which persists in that
+    // page's sessionStorage — reusing it rendered the desktop shell here.)
+    const freshContext = await browser.newContext({ ...iphone });
+    const freshPage = await freshContext.newPage();
+    await freshPage.goto(`${BASE_URL}/?d=${encodeURIComponent(target.id)}`, { waitUntil: 'networkidle' });
+    await freshPage.waitForTimeout(200);
+    const heading = (await freshPage.locator('#story-heading').count())
+      ? await freshPage.locator('#story-heading').innerText()
+      : null;
+    const stages = await freshPage.locator('[data-stage]').count();
+    await freshContext.close();
+    record('6g · a bare deep link (?d=id) opens that decision\'s story', {
+      ok: heading === target.title && stages > 0,
+      detail: heading === target.title ? `story for "${target.title}", ${stages} stages` : `expected "${target.title}", saw ${heading ? `"${heading}"` : 'no story heading'}`,
     });
   }
 

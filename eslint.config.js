@@ -5,7 +5,9 @@ import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', 'test-results/**', 'playwright-report/**'],
+    // `dist*` covers every build output: the second sweep builds to
+    // dist-advisor, and linting a leftover minified bundle throws ~100 errors.
+    ignores: ['dist*/**', 'node_modules/**', 'test-results/**', 'playwright-report/**'],
   },
   js.configs.recommended,
   {

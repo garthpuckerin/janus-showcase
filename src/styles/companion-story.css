@@ -1,0 +1,255 @@
+/* The phone decision story (docs/DESIGN-SYSTEM.md "the decision story").
+   Reuses `.seam`, `.panel-face`, `.chip`, `.fabric-face*`, `.scope-*`,
+   `.trace-*`, `.page-framing` — only what is new to this layout lives here. */
+
+.story {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ---------- Sticky mini-header ---------- */
+.story__header {
+  position: sticky;
+  top: 3.25rem; /* the companion app bar's own height (companion-shell.css) */
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.story__back {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+/* The title wraps in full — it names the thing being read. (It was clamped to
+   two lines with an ellipsis to make room for the chip; the chip now sits on
+   the verdict row.) */
+.story__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.story__verdict-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.story__verdict {
+  font-size: var(--text-md);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Stepper ---------- */
+.story-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* `--stage-accent` carries one state colour to both the left rule and the
+   icon, with a themed fallback, instead of four colour rules per state. Raw
+   hues, never `-text`: this also sits on the bare dark panel in 05–06. */
+.story-item--complete {
+  --stage-accent: var(--color-positive);
+}
+.story-item--failed {
+  --stage-accent: var(--color-danger);
+}
+
+.story-item {
+  min-width: 0;
+  border-left: 3px solid var(--stage-accent, var(--color-border));
+  padding-left: var(--space-3);
+}
+
+.story-list--dark .story-item {
+  border-left-color: var(--stage-accent, var(--color-panel-border));
+}
+
+.story-item__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 3rem;
+  cursor: pointer;
+}
+
+.story-item__summary--static {
+  cursor: default;
+}
+.story-item__icon {
+  flex: none;
+  color: var(--stage-accent, var(--color-ink-muted));
+}
+.story-list--dark .story-item__icon {
+  color: var(--stage-accent, var(--color-panel-muted));
+}
+
+.story-item__index {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+.story-list--dark .story-item__index {
+  color: var(--color-panel-muted);
+}
+
+.story-item__title {
+  font-weight: 600;
+  font-size: var(--text-base);
+}
+
+.story-item__status {
+  flex-basis: 100%;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+  overflow-wrap: anywhere;
+}
+.story-list--dark .story-item__status {
+  color: var(--color-panel-muted);
+}
+
+.story-item__body {
+  padding: var(--space-2) 0 var(--space-1);
+}
+
+/* ---------- Field rows (Request / Outcome-matrix bodies) ---------- */
+.story-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Shared with `.story-chain__node` below: same shape, different context. */
+.story-field,
+.story-chain__node {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+/* Shared with `.story-chain__label` below: same shape, different context. */
+.story-field__label,
+.story-chain__label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.story-field__label {
+  color: var(--color-ink-muted);
+}
+
+.story-field__value {
+  overflow-wrap: anywhere;
+}
+
+.story-nested {
+  margin-top: var(--space-2);
+}
+.story-nested summary {
+  cursor: pointer;
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
+/* `.payload pre` (components.css) uses `white-space: pre`; on the phone it
+   must wrap instead — scoped here, the shared component stays untouched. */
+.story-nested .payload pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.story-line {
+  margin: 0 0 var(--space-3);
+}
+
+/* ---------- The seam and the dark region (full-bleed) ---------- */
+/* Cancels `.companion-shell__content`'s own `--space-4` side padding
+   (companion-shell.css, not this task's to edit) so the background reaches
+   the true viewport edge. */
+.story-seam {
+  margin: 0 calc(var(--space-4) * -1);
+}
+.story-dark {
+  margin: 0 calc(var(--space-4) * -1);
+  padding: var(--space-4);
+  border: 0;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ---------- Identity chain (vertical, phone-only) ---------- */
+.story-chain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-panel-border);
+}
+
+.story-chain__label {
+  color: var(--color-panel-muted);
+}
+
+.story-chain__value {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.story-chain__mark {
+  display: inline-flex;
+  flex: none;
+}
+
+.story-chain__mark--match {
+  color: var(--color-positive);
+}
+.story-chain__mark--mismatch {
+  color: var(--color-danger);
+}
+.story-chain__mark--not-issued {
+  color: var(--color-panel-muted);
+}
+
+/* ---------- No re-run controls ---------- */
+.story-rerun {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}

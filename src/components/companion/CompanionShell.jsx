@@ -4,11 +4,12 @@ import { BottomTabs } from './BottomTabs.jsx';
 import { MoreSheet } from './MoreSheet.jsx';
 import { DeskOnlyState } from './DeskOnlyState.jsx';
 import { COMPANION_TABS, DESK_ONLY_VIEWS } from '../../constants/surfaces.js';
+import { companionShowsDecision } from '../../utils/surface.js';
 import { AttentionView } from '../../views/companion/AttentionView.jsx';
 import { DecisionsFeedView } from '../../views/companion/DecisionsFeedView.jsx';
 import { DecisionStoryView } from '../../views/companion/DecisionStoryView.jsx';
-import { AdvisorView } from '../../views/AdvisorView.jsx';
-import { MatrixView } from '../../views/MatrixView.jsx';
+import { AdvisorWizardView } from '../../views/companion/AdvisorWizardView.jsx';
+import { MatrixLookupView } from '../../views/companion/MatrixLookupView.jsx';
 import ErrorBoundary from '../common/ErrorBoundary.jsx';
 import { useTheme } from '../../hooks/useTheme.js';
 import { useDensity } from '../../hooks/useDensity.js';
@@ -44,7 +45,7 @@ export function CompanionShell({ view, selectedId, onNavigate, onOpenDecision, o
   const [theme, setTheme] = useTheme();
   const [density, setDensity] = useDensity();
 
-  const hasOpenDecision = view === 'decisions' && Boolean(selectedId);
+  const hasOpenDecision = companionShowsDecision({ view, selectedId });
 
   let content;
   if (DESK_ONLY_VIEWS.includes(view)) {
@@ -58,13 +59,13 @@ export function CompanionShell({ view, selectedId, onNavigate, onOpenDecision, o
   } else if (view === 'advisor') {
     content = (
       <ErrorBoundary>
-        <AdvisorView />
+        <AdvisorWizardView />
       </ErrorBoundary>
     );
   } else if (view === 'matrix') {
     content = (
       <ErrorBoundary>
-        <MatrixView />
+        <MatrixLookupView />
       </ErrorBoundary>
     );
   } else {
@@ -82,7 +83,11 @@ export function CompanionShell({ view, selectedId, onNavigate, onOpenDecision, o
 
       <div className="companion-shell__content">{content}</div>
 
-      <BottomTabs activeTab={activeTabFor(view)} onNavigate={onNavigate} onMore={() => setMoreOpen(true)} />
+      <BottomTabs
+        activeTab={hasOpenDecision ? 'decisions' : activeTabFor(view)}
+        onNavigate={onNavigate}
+        onMore={() => setMoreOpen(true)}
+      />
 
       <MoreSheet
         open={moreOpen}

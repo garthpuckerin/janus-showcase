@@ -1,0 +1,174 @@
+/* The phone Outcome matrix lookup: stacked native controls, a live result
+   card, and "all rows" as cards behind a `<details>` — never a table.
+   Self-contained — it does not depend on `matrix.css` (the desktop
+   explorer's own stylesheet, left untouched). */
+
+.matrix-lookup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+/* ---------- Controls ---------- */
+.matrix-lookup__controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.matrix-lookup__controls select {
+  min-height: 2.75rem;
+}
+
+.matrix-lookup__checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 2.75rem;
+  font-size: var(--text-base);
+  color: var(--color-ink);
+}
+
+/* An explicit size on the native checkbox itself, not just its label — the
+   whole control (the thing a screen-reader and the touch-target gate both
+   see) clears 44x44, not merely its clickable row. */
+.matrix-lookup__checkbox input[type='checkbox'] {
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  /* The native control's own checked colour defaults to the browser's blue,
+     not this app's brass accent — `accent-color` is never set anywhere else
+     in the app either, but it is far more visible at 44px than at a native
+     checkbox's usual size. */
+  accent-color: var(--color-accent);
+}
+
+.matrix-lookup__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ---------- Result ---------- */
+.matrix-lookup__result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Docked under the companion app bar (3.25rem) so the answer stays in view
+   while the inputs change. Canvas-coloured so content scrolls under it
+   cleanly; compact so the first control still starts high on the screen. */
+.matrix-lookup__dock {
+  position: sticky;
+  top: 3.25rem;
+  z-index: 5;
+  padding: var(--space-2) 0;
+  background: var(--color-canvas);
+}
+
+.matrix-lookup__dock .card,
+.matrix-lookup__dock .data-state {
+  padding: var(--space-3) var(--space-4);
+}
+
+.matrix-lookup__presets-label {
+  flex: 1 0 100%;
+  color: var(--color-ink-muted);
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.matrix-lookup__chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.matrix-lookup__chip .directive-chip {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-md);
+}
+
+/* ---------- All rows ---------- */
+.matrix-lookup__all-rows {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-4);
+}
+
+/* `details.` beats the shell's generic `.companion-shell__content summary`
+   override on specificity — see companion-advisor.css for the same note. */
+details.matrix-lookup__all-rows summary {
+  display: flex;
+  align-items: center;
+  min-height: 3rem;
+  cursor: pointer;
+  color: var(--color-ink-muted);
+  font-weight: 600;
+}
+
+.matrix-lookup__all-rows[open] summary {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.matrix-lookup__all-rows[open] {
+  padding-bottom: var(--space-4);
+}
+
+.matrix-lookup__row-list {
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.matrix-row-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.matrix-row-card--fired {
+  border-color: var(--color-accent-line);
+  box-shadow: inset 3px 0 0 var(--color-accent-line);
+}
+
+.matrix-row-card__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+}
+
+.matrix-row-card__fired-tag {
+  color: var(--color-accent-ink);
+  background: var(--color-accent);
+  border-radius: var(--radius-xs);
+  padding: 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+}
+
+.matrix-row-card__directives {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+.matrix-row-card__fallback {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}

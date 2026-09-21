@@ -48,3 +48,19 @@ export function resolveRoute({ rawView, fallback }) {
   if (rawView === null || rawView === undefined || rawView === SURFACE_FORCE_VALUE) return fallback;
   return rawView;
 }
+
+/* The two list screens a decision can be opened FROM on the phone. */
+const DECISION_HOST_VIEWS = Object.freeze(['attention', 'decisions']);
+
+/**
+ * Does the companion show a decision's story? A bare deep link
+ * (`/?d=<id>`, no `view`) lands on the phone's default view, `attention` —
+ * the first version only opened the story under `view=decisions`, so every
+ * shared link silently showed the Attention list instead. A decision id
+ * opens the story from either list screen; an explicit other tab
+ * (advisor, matrix, a desk-only route) wins over a stale id.
+ * @param {{view: string, selectedId?: string|null}} input
+ */
+export function companionShowsDecision({ view, selectedId }) {
+  return Boolean(selectedId) && DECISION_HOST_VIEWS.includes(view);
+}
