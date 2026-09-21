@@ -1,0 +1,254 @@
+/* The app shell: sidebar (wordmark + grouped nav) and sticky topbar. See
+   components.css for the reusable card/button/chip/table vocabulary these
+   regions use internally. */
+.app-shell {
+  display: grid;
+  grid-template-columns: var(--shell-sidebar) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    'sidebar topbar'
+    'sidebar main';
+  min-height: 100vh;
+}
+
+/* ---------- Sidebar ---------- */
+.app-sidebar {
+  grid-area: sidebar;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: var(--space-4) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+  /* Pinned: the navigation stays in view on long pages (the decision detail
+     runs two screens). Without this the rail scrolled away and left bare
+     canvas beside the content. */
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-2);
+}
+
+.wordmark__glyph {
+  display: flex;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+}
+
+.wordmark__glyph-half {
+  flex: 1 1 50%;
+}
+
+.wordmark__glyph-half--light {
+  background: var(--color-surface);
+}
+
+.wordmark__glyph-half--dark {
+  background: var(--color-panel);
+}
+
+.wordmark__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.wordmark__name {
+  font-weight: 700;
+  font-size: var(--text-lg);
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.wordmark__sub {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.app-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  overflow-y: auto;
+}
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.nav-group__label {
+  margin: 0 0 var(--space-1) var(--space-3);
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--control-height);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid transparent;
+  border-left: 3px solid transparent;
+  color: var(--color-ink-muted);
+  font-size: var(--text-base);
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+
+.nav-link:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-ink);
+}
+
+.nav-link--active {
+  background: var(--color-surface-muted);
+  color: var(--color-ink);
+  font-weight: 600;
+  border-left-color: var(--color-accent-line);
+}
+
+/* ---------- Topbar ---------- */
+.app-topbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 3.75rem;
+  padding: 0 var(--page-gutter);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-canvas);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-width: 0;
+}
+
+.app-topbar__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.app-topbar__title {
+  font-weight: 700;
+  font-size: var(--text-md);
+  color: var(--color-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ---------- Main ---------- */
+.app-main {
+  grid-area: main;
+  padding: var(--space-6) var(--page-gutter);
+  overflow-y: auto;
+  min-width: 0;
+}
+
+.app-main__inner {
+  max-width: 75rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+/* Flex children default to an automatic min-width based on their content's
+   min-content size, which lets a wide table or <pre> force the whole column
+   wider than the viewport — and because `html, body` clip horizontal
+   overflow (app.css), that shows up as content clipped at the right edge
+   rather than a scrollbar. Every child of a flex/grid layout that might hold
+   a table or `<pre>` needs `min-width: 0` so it can shrink to the available
+   width and let its own `overflow-x: auto` wrapper do the scrolling instead. */
+.app-main__inner > * {
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      'topbar'
+      'sidebar'
+      'main';
+  }
+
+  .app-sidebar {
+    position: static;
+    height: auto;
+    overflow-y: visible;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: var(--space-3);
+  }
+
+  .app-sidebar__nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+
+  .nav-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .nav-group__label {
+    margin: 0 var(--space-2) 0 0;
+  }
+
+  .app-topbar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: var(--space-3);
+  }
+
+  .app-main {
+    padding: var(--space-4);
+  }
+}

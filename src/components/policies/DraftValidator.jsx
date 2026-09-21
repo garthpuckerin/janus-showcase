@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { PERSONA_TYPES, validatePersonaPolicy } from '../../domain/policies.js';
 import { PARTICIPATION } from '../../domain/matrix.js';
+import { DataState } from '../common/DataState.jsx';
 import { scaffoldPersonaPolicy } from './scaffold.js';
 
 const LEAD_ROUTE = Object.freeze({
@@ -28,7 +29,8 @@ function toggleDirectiveType(draft, type, include) {
 }
 
 /** An editable draft persona policy, validated live against the same
- *  `validatePersonaPolicy()` the engine's registry runs at load time. */
+ *  `validatePersonaPolicy()` the engine's registry runs at load time —
+ *  controls on the left, the live result on the right. */
 export function DraftValidator() {
   const [draft, setDraft] = useState(scaffoldPersonaPolicy);
 
@@ -58,65 +60,75 @@ export function DraftValidator() {
   const handleReset = useCallback(() => setDraft(scaffoldPersonaPolicy()), []);
 
   return (
-    <div className="panel policy-draft">
-      <h2 className="rail-stage__heading">Validate a draft</h2>
-      <p className="page-framing">
-        Offline policy tools — <code>validate</code>, <code>diff</code> and <code>scaffold</code> — run against the
-        registry rules without ever loading the draft into the engine.
-      </p>
-      <div className="policy-draft__controls">
-        <div className="field">
-          <label htmlFor="draft-persona-type">Persona type</label>
-          <select id="draft-persona-type" value={draft.persona_type} onChange={handlePersonaType}>
-            {PERSONA_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="field">
-          <label htmlFor="draft-participation">Model participation</label>
-          <select id="draft-participation" value={draft.model_participation} onChange={handleParticipation}>
-            {PARTICIPATION.map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="field field--checkbox">
-          <label htmlFor="draft-activate-shard">
-            <input id="draft-activate-shard" type="checkbox" checked={activatesShard} onChange={handleActivateShardToggle} />
-            Allow ACTIVATE_SHARD
-          </label>
-        </div>
-        <div className="field field--checkbox">
-          <label htmlFor="draft-route">
-            <input id="draft-route" type="checkbox" checked={hasRoute} onChange={handleRouteToggle} />
-            Route lead.received to lead.crm.contact-upsert@1
-          </label>
-        </div>
-        <button type="button" className="button button--ghost" onClick={handleReset}>
-          Reset draft
-        </button>
+    <div className="card policy-draft">
+      <div className="card__header">
+        <span className="eyebrow">Validate a draft</span>
       </div>
-
-      <div aria-live="polite" className="policy-draft__result">
-        {errors.length === 0 ? (
-          <p className="policy-draft__valid" role="status">
-            Registry-valid — this draft would load.
-          </p>
-        ) : (
-          <div className="error-card" role="alert">
-            <h2>{errors.length} registry error{errors.length === 1 ? '' : 's'}</h2>
-            <ul>
-              {errors.map((error) => (
-                <li key={error}>{error}</li>
+      <p className="page-heading__lede">
+        Offline policy tools —{' '}
+        <span className="chip chip--neutral mono">validate</span>{' '}
+        <span className="chip chip--neutral mono">diff</span> and{' '}
+        <span className="chip chip--neutral mono">scaffold</span> — run against the registry rules without ever
+        loading the draft into the engine.
+      </p>
+      <div className="policy-draft__body">
+        <div className="policy-draft__controls">
+          <div className="field">
+            <label htmlFor="draft-persona-type">Persona type</label>
+            <select id="draft-persona-type" value={draft.persona_type} onChange={handlePersonaType}>
+              {PERSONA_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
               ))}
-            </ul>
+            </select>
           </div>
-        )}
+          <div className="field">
+            <label htmlFor="draft-participation">Model participation</label>
+            <select id="draft-participation" value={draft.model_participation} onChange={handleParticipation}>
+              {PARTICIPATION.map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field field--checkbox">
+            <label htmlFor="draft-activate-shard">
+              <input id="draft-activate-shard" type="checkbox" checked={activatesShard} onChange={handleActivateShardToggle} />
+              Allow ACTIVATE_SHARD
+            </label>
+          </div>
+          <div className="field field--checkbox">
+            <label htmlFor="draft-route">
+              <input id="draft-route" type="checkbox" checked={hasRoute} onChange={handleRouteToggle} />
+              Route lead.received to lead.crm.contact-upsert@1
+            </label>
+          </div>
+          <button type="button" className="button button--secondary" onClick={handleReset}>
+            Reset draft
+          </button>
+        </div>
+
+        <div aria-live="polite" className="policy-draft__result">
+          {errors.length === 0 ? (
+            <DataState tone="accent" title="Registry-valid">
+              This draft would load.
+            </DataState>
+          ) : (
+            <DataState
+              tone="danger"
+              title={`${errors.length} registry error${errors.length === 1 ? '' : 's'}`}
+              action={
+                <ul className="policy-draft__errors">
+                  {errors.map((error) => (
+                    <li key={error}>{error}</li>
+                  ))}
+                </ul>
+              }
+            />
+          )}
+        </div>
       </div>
     </div>
   );

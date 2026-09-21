@@ -10,13 +10,33 @@ import ErrorBoundary from './components/common/ErrorBoundary.jsx';
 import { useQueryParamState } from './hooks/useQueryParamState.js';
 import { LEDGER } from './data/ledger.js';
 
-const NAV_ITEMS = [
-  { id: 'decisions', label: 'Decisions' },
-  { id: 'advisor', label: 'Advisor' },
-  { id: 'matrix', label: 'Outcome matrix' },
-  { id: 'policies', label: 'Policies' },
-  { id: 'boundary', label: 'Boundary' },
+const NAV_GROUPS = [
+  {
+    id: 'decide',
+    label: 'Decide',
+    items: [
+      { id: 'decisions', label: 'Decisions' },
+      { id: 'advisor', label: 'Advisor' },
+    ],
+  },
+  {
+    id: 'understand',
+    label: 'Understand',
+    items: [
+      { id: 'matrix', label: 'Outcome matrix' },
+      { id: 'policies', label: 'Policies' },
+      { id: 'boundary', label: 'Boundary' },
+    ],
+  },
 ];
+
+function activeNavItem(view) {
+  for (const group of NAV_GROUPS) {
+    const item = group.items.find((candidate) => candidate.id === view);
+    if (item) return { group, item };
+  }
+  return null;
+}
 
 export default function App() {
   const [view, setView] = useQueryParamState('view', 'decisions');
@@ -37,8 +57,12 @@ export default function App() {
     [setView, setSelectedId],
   );
 
+  const active = activeNavItem(view);
+  const pageEyebrow = active?.group.label ?? null;
+  const pageTitle = active?.item.label ?? null;
+
   let content;
-  if (view === 'decisions' && selectedEntry) {
+  if (view === 'decisions' && selectedId) {
     content = (
       <ErrorBoundary>
         <DecisionDetailView entry={selectedEntry} onBack={handleCloseDetail} />
@@ -75,7 +99,13 @@ export default function App() {
   }
 
   return (
-    <Shell navItems={NAV_ITEMS} activeView={view} onNavigate={handleNavigate}>
+    <Shell
+      navGroups={NAV_GROUPS}
+      activeView={view}
+      onNavigate={handleNavigate}
+      pageEyebrow={pageEyebrow}
+      pageTitle={pageTitle}
+    >
       {content}
     </Shell>
   );

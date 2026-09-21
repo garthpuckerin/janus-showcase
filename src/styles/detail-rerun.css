@@ -1,0 +1,21 @@
+/* The "re-run with…" card: a mono eyebrow, the caller/port selects, and a
+   secondary Reset — `.card`/`.card__header`/`.eyebrow`/`.field` are the
+   shared vocabulary (components.css); this is only the internal layout. */
+.rerun-panel__body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.rerun-panel__fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.rerun-panel__fields .field {
+  min-width: 12rem;
+}

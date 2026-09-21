@@ -39,17 +39,20 @@ export function DecisionsView({ onSelectScenario }) {
 
   return (
     <section aria-labelledby="decisions-heading">
-      <div className="page-header">
+      <div className="page-heading">
         <div>
-          <h1 id="decisions-heading">Decisions</h1>
-          <p className="page-framing">
+          <span className="eyebrow">Decide</span>
+          <h1 id="decisions-heading" className="page-heading__title">
+            Decisions
+          </h1>
+          <p className="page-heading__lede">
             This history belongs to the composed runtime that receives each directive — Fabric outcomes, kept here
             for illustration. The decision engine itself stores nothing.
           </p>
         </div>
       </div>
 
-      <div className="filter-chips" role="group" aria-label="Filter by directive type">
+      <div className="segmented decisions-filter" role="group" aria-label="Filter by directive type">
         {DIRECTIVE_FILTERS.map((filter) => (
           <FilterChip
             key={filter.id}

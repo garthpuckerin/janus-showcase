@@ -1,0 +1,154 @@
+/* Fabric's side of the boundary (docs/DESIGN-SYSTEM.md "the two faces"): the
+   `.panel-face` region drawn full width below the seam. `.panel-face .card`
+   already swaps in `--color-panel-raised` (components.css) — this file only
+   overrides the LIGHT-canvas-tuned pieces of the shared vocabulary
+   (`.eyebrow`, `.card__header`, `.not-applicable`, `<h4>`) so they read
+   correctly against the dark panel, plus the layout and content specific to
+   the trusted-caller/ticket comparison and the outcome. */
+
+.fabric-face {
+  min-width: 0;
+}
+
+.fabric-face__empty {
+  margin: 0;
+  color: var(--color-panel-muted);
+}
+
+.fabric-face__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .fabric-face__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Both cards can hold a `pre` (Payload — the rejection details or the ticket
+   document) — see the analogous rule in detail-janus-face.css. */
+.fabric-face__grid > * {
+  min-width: 0;
+}
+
+.fabric-face__card {
+  min-width: 0;
+}
+
+/* `.eyebrow` and `.card__header`'s hairline are tuned for the light canvas
+   (components.css); inside the panel they need the panel's own muted ink and
+   border so they clear contrast against --color-panel-raised. */
+.panel-face .eyebrow {
+  color: var(--color-panel-muted);
+}
+
+.panel-face .card__header {
+  border-bottom-color: var(--color-panel-border);
+}
+
+.panel-face .not-applicable {
+  color: var(--color-panel-muted);
+}
+
+.fabric-face h4 {
+  margin: var(--space-3) 0 var(--space-2);
+  color: var(--color-panel-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fabric-face__caller {
+  margin: 0 0 var(--space-3);
+}
+
+.scope-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.scope-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+/* Only the scope identifier is struck through; the reason stays readable
+   beside it, so the absence is stated in words and not by styling alone. */
+.scope-list__item--absent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  color: var(--color-panel-muted);
+}
+
+.scope-list__item--absent code {
+  text-decoration: line-through;
+}
+
+.scope-list__note {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--color-panel-muted);
+}
+
+.fabric-face__authority {
+  margin: var(--space-3) 0 0;
+  color: var(--color-panel-muted);
+  font-size: var(--text-sm);
+}
+
+.fabric-face__rejection {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-panel-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.fabric-face__dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  margin: 0 0 var(--space-3);
+  font-size: 0.85rem;
+  color: var(--color-panel-muted);
+}
+
+.fabric-face__dl dd {
+  margin: 0;
+  color: var(--color-ink-inverse);
+}
+
+.fabric-face__ticket-details {
+  margin-top: var(--space-3);
+}
+
+.fabric-face__ticket-details summary {
+  cursor: pointer;
+  color: var(--color-panel-muted);
+  font-size: var(--text-sm);
+}
+
+.fabric-face__ticket-details .payload {
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 768px) {
+  .scope-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,18 +1,32 @@
 import { DirectiveChip } from '../common/DirectiveChip.jsx';
 import { policyRefLabel, relativeTimeFromNow, modelStatusLabel } from '../../utils/format.js';
 
-function fabricSummary(entry) {
-  if (!entry.fabric) return { text: 'Not applicable', ariaLabel: 'not applicable', className: 'not-applicable' };
-  if (entry.fabric.kind === 'ticket') {
-    return { text: `Ticket ${entry.fabric.ticket.ticket_id}`, className: '' };
+/** The Fabric-result cell: a ticket id (mono, positive dot), a verbatim
+ *  rejection code (danger chip), or an em dash for directives that never
+ *  reach Fabric at all. Every branch is read off `entry.fabric` itself. */
+function FabricResultCell({ fabric }) {
+  if (!fabric) {
+    return (
+      <span aria-label="not applicable" className="not-applicable">
+        —
+      </span>
+    );
   }
-  return { text: `Rejected · ${entry.fabric.rejection.code}`, className: '' };
+  if (fabric.kind === 'ticket') {
+    return (
+      <span className="decisions-table__fabric-result">
+        <span className="decisions-table__dot decisions-table__dot--positive" aria-hidden="true" />
+        <code>{fabric.ticket.ticket_id}</code>
+      </span>
+    );
+  }
+  return <span className="chip chip--danger">{fabric.rejection.code}</span>;
 }
 
 export function DecisionsTable({ rows, now, onSelectScenario }) {
   return (
-    <div className="panel decisions-table-wrap">
-      <table className="decisions-table">
+    <div className="data-table-wrap">
+      <table className="data-table decisions-table">
         <caption className="visually-hidden">Decision ledger: one row per evaluated request.</caption>
         <thead>
           <tr>
@@ -26,11 +40,12 @@ export function DecisionsTable({ rows, now, onSelectScenario }) {
         </thead>
         <tbody>
           {rows.map((entry) => {
-            const fabric = fabricSummary(entry);
-            const { scenario, evaluation } = entry;
+            const { scenario, evaluation, fabric } = entry;
             return (
               <tr key={scenario.id} onClick={() => onSelectScenario(scenario.id)}>
-                <td data-label="When">{relativeTimeFromNow(scenario.occurredAt, now)}</td>
+                <td data-label="When" className="decisions-table__when">
+                  {relativeTimeFromNow(scenario.occurredAt, now)}
+                </td>
                 <td data-label="Decision" className="decisions-table__title-cell">
                   <button
                     type="button"
@@ -53,18 +68,14 @@ export function DecisionsTable({ rows, now, onSelectScenario }) {
                 <td data-label="Directive">
                   <DirectiveChip type={evaluation.directive.type} />
                 </td>
-                <td data-label="Matrix row">
-                  <span className="matrix-row-tag">
-                    {evaluation.diagnostics.matrix_row === null ? 'pre-matrix' : `row ${evaluation.diagnostics.matrix_row}`}
-                  </span>
+                <td data-label="Matrix row" className="decisions-table__matrix-row">
+                  {evaluation.diagnostics.matrix_row === null ? 'pre-matrix' : `row ${evaluation.diagnostics.matrix_row}`}
                 </td>
-                <td data-label="Model" title={evaluation.diagnostics.model_status}>
+                <td data-label="Model" title={evaluation.diagnostics.model_status} className="decisions-table__model">
                   {modelStatusLabel(evaluation.diagnostics.model_status)}
                 </td>
                 <td data-label="Fabric result">
-                  <span className={fabric.className} aria-label={fabric.ariaLabel}>
-                    {fabric.text}
-                  </span>
+                  <FabricResultCell fabric={fabric} />
                 </td>
               </tr>
             );

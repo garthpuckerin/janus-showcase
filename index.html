@@ -6,12 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Janus — decision engine cockpit</title>
     <meta name="description" content="Janus is a policy-bound decision engine for agentic systems: one request in, exactly one directive out, nothing executed. This is a frontend-only operator console on mock data; the engine is private." />
-    <meta name="theme-color" content="#0f172a" />
+    <meta name="theme-color" content="#f8f8f6" />
+    <link rel="preload" href="/fonts/HankenGrotesk-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/JetBrainsMono-Variable.woff2" as="font" type="font/woff2" crossorigin />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Janus — decision engine cockpit" />
     <meta property="og:description" content="Janus decides. Fabric acts. A policy-bound decision engine for agentic systems, shown through a frontend-only operator console on mock data." />
     <meta property="og:url" content="https://garthpuckerin-janus.vercel.app/" />
     <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      /* Apply a forced (?theme=dark) or stored theme/density BEFORE first paint
+         so a returning visitor never sees one frame of the default. Mirrors
+         src/utils/preferences.js; the hooks re-apply the same values on mount.
+         Storage can be blocked — every access is guarded. */
+      (function () {
+        var root = document.documentElement;
+        var pick = function (value, allowed) { return allowed.indexOf(value) === -1 ? null : value; };
+        var stored = function (key) { try { return window.sessionStorage.getItem(key); } catch (e) { return null; } };
+        var param = null;
+        try { param = new URLSearchParams(window.location.search).get('theme'); } catch (e) { param = null; }
+        var theme = pick(param, ['light', 'dark']) || pick(stored('janus:theme'), ['light', 'dark']);
+        var density = pick(stored('janus:density'), ['comfortable', 'dense']);
+        if (theme) root.setAttribute('data-theme', theme);
+        if (density) root.setAttribute('data-density', density);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

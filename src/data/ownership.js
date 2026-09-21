@@ -25,10 +25,40 @@ export const FABRIC_OWNS = Object.freeze([
   'Terminal outcomes',
 ]);
 
+/* The composed runtime's five-step recall -> decide -> authorize -> execute
+   -> record sequence. `side` names which side of the Janus/Fabric seam a
+   step's own work happens on — `BoundaryView` uses it to render `decide` on
+   a light card and `authorize`/`execute` on Fabric's panel, so the sequence
+   itself visibly crosses the seam. */
 export const COMPOSED_RUNTIME_STEPS = Object.freeze([
-  'Recall — read whatever operational memory the composed runtime keeps',
-  'Decide — Janus evaluates one request and emits exactly one directive',
-  'Authorize — Fabric validates the trusted caller and derives a least-authority ticket',
-  'Execute — the shard performs the action the ticket names, nothing more',
-  'Record — the outcome is written back; a memory failure is a warning, never a blocker',
-]);
+  {
+    id: 'recall',
+    label: 'Recall',
+    side: 'janus',
+    description: 'Read whatever operational memory the composed runtime keeps.',
+  },
+  {
+    id: 'decide',
+    label: 'Decide',
+    side: 'janus',
+    description: 'Janus evaluates one request and emits exactly one directive.',
+  },
+  {
+    id: 'authorize',
+    label: 'Authorize',
+    side: 'fabric',
+    description: 'Fabric validates the trusted caller and derives a least-authority ticket.',
+  },
+  {
+    id: 'execute',
+    label: 'Execute',
+    side: 'fabric',
+    description: 'The shard performs the action the ticket names, nothing more.',
+  },
+  {
+    id: 'record',
+    label: 'Record',
+    side: 'janus',
+    description: 'The outcome is written back; a memory failure is a warning, never a blocker.',
+  },
+].map(Object.freeze));

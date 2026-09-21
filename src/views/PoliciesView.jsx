@@ -7,13 +7,13 @@ import { AUDIENCE_POLICY_CANONICAL, AUDIENCE_POLICY_DRAFT_V2 } from '../data/pol
 export function PoliciesView() {
   return (
     <section aria-labelledby="policies-heading">
-      <div className="page-header">
+      <div className="page-heading">
         <div>
-          <h1 id="policies-heading">Policies</h1>
-          <p className="page-framing">
+          <span className="eyebrow">Understand</span>
+          <h1 id="policies-heading" className="page-heading__title">Policies</h1>
+          <p className="page-heading__lede">
             {PERSONA_POLICIES.length} persona policies and {ACTION_POLICIES.length} action policy, reviewable as
-            records — plus the engine's offline policy tools: <code>validate</code>, <code>diff</code> and{' '}
-            <code>scaffold</code>.
+            records — plus the engine's offline policy tools.
           </p>
         </div>
       </div>

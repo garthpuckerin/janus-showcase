@@ -1,0 +1,91 @@
+/* The identity chain (docs/DESIGN-SYSTEM.md "Identity chain"): request_id →
+   directive_id → ticket_id → outcome_id, each a mono uppercase label over a
+   code value, joined by an arrow with an equality mark. Adapted from the
+   Aether SDK console's `.identity-chain` (read-only reference:
+   aethersdk-showcase/src/styles/features/runs.css). */
+.identity-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.identity-chain__segment {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.identity-chain__node {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.identity-chain__node[data-pending='true'] {
+  border-style: dashed;
+}
+
+.identity-chain__label {
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.identity-chain__value {
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.identity-chain__node[data-pending='true'] .identity-chain__value {
+  color: var(--color-ink-muted);
+}
+
+.identity-chain__arrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 0 0 auto;
+  color: var(--color-ink-faint);
+}
+
+.identity-chain__glyph {
+  font-family: var(--font-mono);
+}
+
+.identity-chain__mark--match {
+  color: var(--color-positive-text);
+}
+
+.identity-chain__mark--mismatch {
+  color: var(--color-danger-text);
+}
+
+.identity-chain__mark--pending {
+  color: var(--color-ink-faint);
+}
+
+@media (max-width: 768px) {
+  .identity-chain {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .identity-chain__segment {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .identity-chain__arrow {
+    align-self: flex-start;
+    padding-left: var(--space-3);
+  }
+}

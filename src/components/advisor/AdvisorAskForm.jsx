@@ -10,14 +10,13 @@ const ASK_FIELDS = ADVISOR_POLICY.input_allowlist.filter((field) => fieldMeta(fi
 export function AdvisorAskForm({ values, onFieldChange, portKey, onPortKeyChange, onSubmit, disabled }) {
   return (
     <form
-      className="panel advisor-form"
+      className="advisor-form"
       aria-label="Ask the advisor persona"
       onSubmit={(event) => {
         event.preventDefault();
         onSubmit();
       }}
     >
-      <h2 className="rail-stage__heading">1 · Ask</h2>
       {ASK_FIELDS.map((field) => (
         <AdvisorField
           key={field}
@@ -29,7 +28,7 @@ export function AdvisorAskForm({ values, onFieldChange, portKey, onPortKeyChange
         />
       ))}
       <div className="field">
-        <label htmlFor="advisor-ask-port">Model port result</label>
+        <label htmlFor="advisor-ask-port">Model port result (scripted)</label>
         <select id="advisor-ask-port" value={portKey} onChange={(event) => onPortKeyChange(event.target.value)}>
           {Object.entries(ADVISOR_PORT_PRESETS).map(([key, preset]) => (
             <option key={key} value={key}>
@@ -37,6 +36,7 @@ export function AdvisorAskForm({ values, onFieldChange, portKey, onPortKeyChange
             </option>
           ))}
         </select>
+        <p className="advisor-field__help">No model runs in this demo — the port result is scripted for the walk.</p>
       </div>
       <button type="submit" className="button" disabled={disabled}>
         Evaluate

@@ -1,26 +1,23 @@
 import { DirectiveChip } from '../common/DirectiveChip.jsx';
+import { DataState } from '../common/DataState.jsx';
 
 /** The resolved directive for the current combination, or — when the
- *  combination is not registry-valid — the named rule it breaks. Everything
- *  shown comes from `resolveDirective()` / `invalidCombinationRule()`, never
- *  computed again here. */
+ *  combination is not registry-valid — the named rule it breaks, in a
+ *  `DataState` tone warning. Everything shown comes from
+ *  `resolveDirective()` / `invalidCombinationRule()`, never computed again
+ *  here. */
 export function MatrixResultPanel({ resolved, invalidRule }) {
   if (invalidRule) {
-    return (
-      <div className="panel matrix-result matrix-result--invalid" role="status">
-        <h2 className="rail-stage__heading">Not a registry-valid combination</h2>
-        <p>{invalidRule}</p>
-      </div>
-    );
+    return <DataState tone="warning" title="Not a registry-valid combination">{invalidRule}</DataState>;
   }
 
   return (
-    <div className="panel matrix-result" role="status">
-      <h2 className="rail-stage__heading">Resolved directive</h2>
-      <p>
+    <div className="card matrix-result" role="status">
+      <span className="eyebrow">Resolved directive</span>
+      <p className="matrix-result__directive">
         <DirectiveChip type={resolved.directive} /> <span className="matrix-row-tag">row {resolved.row}</span>
       </p>
-      <p className="page-framing">
+      <p className="page-heading__lede">
         {resolved.usedFallback
           ? 'The fallback directive fired — ADVISE is not in this combination\'s allowlist.'
           : 'The row\'s own directive fired — no fallback was needed.'}

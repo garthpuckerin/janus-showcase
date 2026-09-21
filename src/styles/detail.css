@@ -1,24 +1,40 @@
-/* The decision-detail rail: Request → pre-matrix checks → outcome matrix →
-   directive → boundary → trusted caller → ticket/rejection → outcome. */
-/* Three rows of two: the rail never scrolls sideways and never widens the
-   page. Janus's four stages sit above the boundary, Fabric's two below it. */
-.decision-rail {
+/* The decision-detail page: page-level layout, plus the rail vocabulary this
+   screen shares with the Advisor screen (`.rail-row`, `.rail-stage*`,
+   `.rail-connector`, the trace list, the compact matrix table and the
+   directive payload block — rendered by the shared `PreMatrixStage` /
+   `MatrixStage` / `DirectiveStage` / `RailConnector` components, and by
+   Advisor's own `ModelStatusPanel`). Do not remove any rule here without
+   checking `src/components/advisor` first — several of these classes have no
+   other definition anywhere in the app.
+
+   The stage-rail header, the identity chain, Janus's side, Fabric's side and
+   the re-run panel each have their own stylesheet (detail-rail.css,
+   detail-identity.css, detail-janus-face.css, detail-fabric-face.css,
+   detail-rerun.css), all imported from app.css. */
+
+/* Heading, identity chain, stage rail, the two faces and the re-run card are
+   separate bands — without this the rail header sat flush on the first stage. */
+.detail-page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5, 24px);
-  counter-reset: rail-stage;
+  gap: var(--space-5);
   min-width: 0;
 }
 
+.detail-faces {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+/* ---------- Shared with Advisor ---------- */
 .rail-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   gap: var(--space-4);
   align-items: stretch;
-}
-
-.rail-row--wide-first {
-  grid-template-columns: minmax(0, 3fr) auto minmax(0, 2fr);
+  min-width: 0;
 }
 
 .rail-stage {
@@ -31,7 +47,7 @@
 
 .rail-stage__heading::before {
   content: counter(rail-stage, decimal-leading-zero) ' · ';
-  color: var(--color-text-faint);
+  color: var(--color-ink-muted);
 }
 
 .rail-stage pre,
@@ -48,7 +64,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--color-text-muted);
+  color: var(--color-ink-muted);
 }
 
 .rail-stage--not-reached {
@@ -62,36 +78,7 @@
 .rail-connector {
   flex: 0 0 auto;
   align-self: center;
-  color: var(--color-text-faint);
-}
-
-.boundary-divider {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  color: var(--color-accent-strong);
-}
-
-.boundary-divider::before,
-.boundary-divider::after {
-  content: '';
-  flex: 1 1 0;
-  height: 4px;
-  border-radius: 2px;
-  background: repeating-linear-gradient(
-    to right,
-    var(--color-accent-strong),
-    var(--color-accent-strong) 6px,
-    transparent 6px,
-    transparent 12px
-  );
-}
-
-.boundary-divider__label {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
+  color: var(--color-ink-faint);
 }
 
 .rail-stage dl {
@@ -103,7 +90,7 @@
 }
 
 .rail-stage dt {
-  color: var(--color-text-muted);
+  color: var(--color-ink-muted);
 }
 
 .rail-stage dd {
@@ -132,36 +119,48 @@
 }
 
 .trace-item--pass .trace-item__icon {
-  color: var(--color-success-text);
+  color: var(--color-positive-text);
+}
+
+/* A failed check gets a 3px danger left bar (docs/DESIGN-SYSTEM.md "Trace
+   list"); rows after it simply don't exist in `trace` — `evaluate()` fails
+   closed on the first problem, so there is nothing further to mark
+   "not reached". */
+.trace-item--fail {
+  border-left: 3px solid var(--color-danger);
+  padding-left: var(--space-2);
 }
 
 .trace-item--fail .trace-item__icon {
-  color: var(--color-error-text);
+  color: var(--color-danger-text);
 }
 
 .matrix-mini-table {
   width: 100%;
-  border-collapse: collapse;
   font-size: 0.75rem;
 }
 
 .matrix-mini-table th,
 .matrix-mini-table td {
+  height: auto;
   padding: var(--space-1) var(--space-2);
-  border-bottom: 1px solid var(--color-border);
-  text-align: left;
+  font-family: var(--font-mono);
   white-space: nowrap;
 }
 
 .matrix-mini-table tr[aria-current='true'] {
-  background: var(--color-info-bg);
-  outline: 2px solid var(--color-info-text);
-  outline-offset: -2px;
+  background: var(--color-accent-soft);
+  box-shadow: inset 3px 0 0 var(--color-accent-line);
 }
 
+/* Payload blocks always render on --color-panel regardless of theme or which
+   side of the boundary they sit on (docs/DESIGN-SYSTEM.md "Payload block").
+   `DirectiveStage` (shared with Advisor) still renders its own `pre`
+   directly rather than the `Payload` component — see the handoff report. */
 .directive-json {
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
+  background: var(--color-panel);
+  color: var(--color-ink-inverse);
+  border: 1px solid var(--color-panel-border);
   border-radius: var(--radius-md);
   padding: var(--space-3);
   font-family: var(--font-mono);
@@ -170,94 +169,13 @@
   white-space: pre;
 }
 
-.scope-columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
-}
-
-.rail-stage h4 {
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--color-text-muted);
-  margin: var(--space-3) 0 var(--space-2);
-}
-
-.scope-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-}
-
-.scope-list__item--absent {
-  color: var(--color-text-faint);
-  text-decoration: line-through;
-}
-
-.rejection-details {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  white-space: pre-wrap;
-}
-
-.correlation-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-}
-
-.correlation-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-}
-
-.correlation-item__check {
-  color: var(--color-success-text);
-}
-
-.correlation-item__cross {
-  color: var(--color-error-text);
-}
-
-.rerun-panel {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--space-4);
-}
-
-.rerun-panel__fields {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-}
-
 @media (max-width: 768px) {
-  .rail-row,
-  .rail-row--wide-first {
+  .rail-row {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .rail-connector {
     justify-self: start;
     transform: rotate(90deg);
-  }
-
-  .boundary-divider__label {
-    white-space: normal;
-    text-align: center;
-  }
-
-  .scope-columns {
-    grid-template-columns: 1fr;
   }
 }

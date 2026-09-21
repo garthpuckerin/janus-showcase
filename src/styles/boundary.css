@@ -1,30 +1,100 @@
-/* The ownership map and the composed-runtime summary. */
+/* Boundary: the two-faces device at full scale — the light-side ownership
+   cards, the seam, Fabric's panel-face, and the composed-runtime sequence
+   that crosses it. */
 .boundary-columns {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
   gap: var(--space-4);
   min-width: 0;
 }
 
-.boundary-column ul {
+.boundary-column__list {
   margin: 0;
   padding-left: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  font-size: 0.88rem;
+  font-size: var(--text-base);
 }
 
+/* Fabric's card, scoped so this page's layout choice never leaks onto any
+   other future use of the foundation's bare `.panel-face`. */
+.boundary-fabric {
+  display: flex;
+}
+
+.boundary-fabric .boundary-column {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ---------- Composed runtime ---------- */
 .boundary-runtime-steps {
   margin: 0;
-  padding-left: var(--space-5);
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+
+.boundary-runtime-step {
+  flex: 1 1 9rem;
+  min-width: 9rem;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  font-size: 0.9rem;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.boundary-runtime-step--fabric {
+  background: var(--color-panel-raised);
+  border-color: var(--color-panel-border);
+  color: var(--color-ink-inverse);
+}
+
+.boundary-runtime-step__index {
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+}
+
+.boundary-runtime-step--fabric .boundary-runtime-step__index {
+  color: var(--color-panel-muted);
+}
+
+.boundary-runtime-step__label {
+  font-weight: 600;
+}
+
+.boundary-runtime-step__description {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
+.boundary-runtime-step--fabric .boundary-runtime-step__description {
+  color: var(--color-panel-muted);
 }
 
 /* Empty on purpose — the architecture figure is added later. */
 .architecture-figure-slot {
   min-height: 1px;
+}
+
+@media (max-width: 768px) {
+  .boundary-runtime-steps {
+    flex-direction: column;
+  }
+
+  .boundary-runtime-step {
+    min-width: 0;
+  }
+
+  .boundary-fabric {
+    flex-direction: column;
+  }
 }

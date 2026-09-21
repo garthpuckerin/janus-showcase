@@ -21,7 +21,8 @@ export function ModelStatusPanel({ diagnostics, matrixRowExplanation }) {
               <span className="not-applicable">not applicable</span>
             ) : (
               <>
-                {confidence} against a floor of {floor} —{' '}
+                <span className="mono tabular-num">{confidence}</span> against a floor of{' '}
+                <span className="mono tabular-num">{floor}</span> —{' '}
                 <strong>{clearsFloor ? 'clears the policy floor' : 'below the policy floor'}</strong>
               </>
             )}

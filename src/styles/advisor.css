@@ -1,8 +1,9 @@
-/* The Advisor workflow: the Ask/Clarify forms, the continuation card, the
-   tamper controls and the persistent "why this persona cannot act" panel. */
+/* The Advisor workflow: the numbered Ask -> Clarify walk (advisor-step
+   cards), the continuation payload, the tamper controls and the persistent
+   "why this persona cannot act" panel in the sticky right column. */
 .advisor-layout {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-5);
   align-items: start;
   min-width: 0;
@@ -15,50 +16,78 @@
   min-width: 0;
 }
 
-.advisor-why {
-  position: sticky;
-  top: var(--space-5);
+@media (min-width: 1100px) {
+  .advisor-layout {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+  }
+
+  .advisor-why {
+    position: sticky;
+    top: var(--space-5);
+  }
+}
+
+/* ---------- Numbered step cards ---------- */
+.advisor-step {
+  min-width: 0;
+}
+
+.advisor-step__title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--text-md);
+}
+
+.advisor-step__index {
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
+/* Both tracks may shrink and both may wrap: with `auto 1fr` a long label
+   took its full width and pushed the value column out of the 22rem panel. */
+.advisor-why__rows {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  overflow-wrap: anywhere;
+  gap: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+  margin: 0 0 var(--space-3);
+}
+
+.advisor-why__rows dt {
+  color: var(--color-ink-muted);
+}
+
+.advisor-why__rows dd {
+  margin: 0;
 }
 
 .advisor-why__events {
   list-style: none;
   margin: 0;
   padding: 0;
-  font-family: var(--font-mono);
   font-size: 0.82rem;
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
 }
 
+.tabular-num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Forms ---------- */
 .advisor-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
 
-.advisor-field textarea,
-.advisor-field input[type='text'],
-.advisor-field input[type='number'] {
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border-strong);
-  background: var(--color-bg);
-  color: var(--color-text);
-  font: inherit;
-}
-
 .advisor-field__help {
   margin: 0;
-  color: var(--color-text-faint);
+  color: var(--color-ink-muted);
   font-size: 0.78rem;
-}
-
-.advisor-results {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  min-width: 0;
 }
 
 .advisor-result-block {
@@ -68,45 +97,88 @@
   min-width: 0;
 }
 
-.advisor-continuation__row {
+/* ---------- Continuation payload + "what it does not carry" ---------- */
+.advisor-continuation {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-1) var(--space-3);
-  font-size: 0.85rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  min-width: 0;
 }
 
-.advisor-continuation__row dt {
-  color: var(--color-text-muted);
+@media (min-width: 640px) {
+  .advisor-continuation {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: start;
+  }
 }
 
-.advisor-continuation__row dd {
-  margin: 0;
-  font-family: var(--font-mono);
-  word-break: break-word;
-}
-
-.advisor-continuation__disclaimers {
-  margin: var(--space-2) 0 0;
-  padding-left: var(--space-5);
-  color: var(--color-text-muted);
-  font-size: 0.85rem;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.advisor-tamper {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-4);
+.advisor-continuation__absent {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  min-width: 0;
+}
+
+.advisor-continuation__absent-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.advisor-continuation__absent-list li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-base);
+}
+
+.advisor-continuation__absent-list li:last-child {
+  border-bottom: none;
+}
+
+.advisor-continuation__absent-marker {
+  flex: none;
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ---------- Tamper controls ---------- */
+.advisor-tamper-details {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+
+.advisor-tamper-details summary {
+  cursor: pointer;
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.advisor-tamper-details[open] summary {
+  margin-bottom: var(--space-3);
+}
+
+.advisor-tamper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .advisor-tamper legend {
-  padding: 0 var(--space-1);
-  color: var(--color-text-muted);
+  padding: 0;
+  color: var(--color-ink-muted);
   font-size: 0.85rem;
 }
 
@@ -119,18 +191,8 @@
 }
 
 .advisor-tamper__description {
-  color: var(--color-text-faint);
+  color: var(--color-ink-muted);
   font-size: 0.78rem;
   flex-basis: 100%;
   margin-left: 1.6rem;
-}
-
-@media (max-width: 900px) {
-  .advisor-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .advisor-why {
-    position: static;
-  }
 }

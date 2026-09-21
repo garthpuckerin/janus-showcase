@@ -1,0 +1,98 @@
+/* The stage-rail header (docs/DESIGN-SYSTEM.md "Stage rail"): six segments,
+   full width, each a 3px top rule coloured by state, a mono index, a sans
+   title and a mono status line. Segments are anchor links to the matching
+   section below. See src/components/detail/stageStates.js for the states
+   themselves — nothing here decides pass/fail, it only renders them. */
+.stage-rail {
+  min-width: 0;
+}
+
+.stage-rail__list {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stage-rail__segment {
+  min-width: 0;
+  border-top: 3px solid var(--color-border);
+  padding-top: var(--space-2);
+}
+
+.stage-rail__segment--complete {
+  border-top-color: var(--color-positive);
+}
+
+.stage-rail__segment--failed {
+  border-top-color: var(--color-danger);
+}
+
+.stage-rail__link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.stage-rail__link:hover .stage-rail__title {
+  text-decoration: underline;
+}
+
+.stage-rail__index {
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.stage-rail__title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.stage-rail__segment--failed .stage-rail__title {
+  color: var(--color-danger-text);
+}
+
+.stage-rail__segment--not-reached .stage-rail__title {
+  color: var(--color-ink-muted);
+}
+
+.stage-rail__status {
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  overflow-wrap: anywhere;
+}
+
+.stage-rail__segment--failed .stage-rail__status {
+  color: var(--color-danger-text);
+}
+
+@media (max-width: 768px) {
+  .stage-rail__list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .stage-rail__segment {
+    border-top: none;
+    border-left: 3px solid var(--color-border);
+    padding-top: 0;
+    padding-left: var(--space-3);
+  }
+
+  .stage-rail__segment--complete {
+    border-left-color: var(--color-positive);
+  }
+
+  .stage-rail__segment--failed {
+    border-left-color: var(--color-danger);
+  }
+}

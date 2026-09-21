@@ -1,3 +1,4 @@
+import { Payload } from '../common/Payload.jsx';
 
 export function RequestStage({ request }) {
   return (
@@ -14,7 +15,7 @@ export function RequestStage({ request }) {
           <dt>Tenant</dt>
           <dd>{request.persona.context?.tenant_id ?? '—'}</dd>
         </dl>
-        <pre className="directive-json">{JSON.stringify(request.event.payload, null, 2)}</pre>
+        <Payload caption="Event payload" value={request.event.payload} />
       </div>
     </div>
   );

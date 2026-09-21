@@ -1,0 +1,30 @@
+/* Janus's side of the boundary (docs/DESIGN-SYSTEM.md "the two faces"):
+   Request, Pre-matrix checks, Outcome matrix and Directive as `.card`s on
+   the canvas. `.rail-stage`/`.panel` already resolve to the shared card look
+   (components.css: `.card, .panel { ... }`) — this file is only the grid
+   that arranges the four cards, plus the local numbering scope for their
+   `.rail-stage__heading` (see detail.css). */
+.detail-janus-face {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  min-width: 0;
+  /* Local scope: numbers these four stages 01–04, independent of whatever
+     other `.rail-stage` instances exist elsewhere on the page or app. */
+  counter-reset: rail-stage;
+}
+
+/* Every card here can hold a `pre` (Payload) or a `.data-table` (MatrixTable
+   inside MatrixStage) — without this, the grid item's default auto min-width
+   would size to that content and could force the grid wider than the page. */
+.detail-janus-face > * {
+  min-width: 0;
+}
+
+@media (min-width: 1100px) {
+  .detail-janus-face {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, auto);
+    grid-auto-flow: column;
+  }
+}

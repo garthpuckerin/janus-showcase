@@ -19,14 +19,13 @@ export function AdvisorClarifyForm({
 }) {
   return (
     <form
-      className="panel advisor-form"
+      className="advisor-form"
       aria-label="Clarify the fields the advisor persona requested"
       onSubmit={(event) => {
         event.preventDefault();
         onSubmit();
       }}
     >
-      <h2 className="rail-stage__heading">2 · Clarify</h2>
       {requestedFields.map((field) => (
         <AdvisorField
           key={field}
@@ -38,7 +37,7 @@ export function AdvisorClarifyForm({
         />
       ))}
       <div className="field">
-        <label htmlFor="advisor-clarify-port">Model port result for the follow-up</label>
+        <label htmlFor="advisor-clarify-port">Model port result (scripted)</label>
         <select
           id="advisor-clarify-port"
           value={portKey}
@@ -50,8 +49,12 @@ export function AdvisorClarifyForm({
             </option>
           ))}
         </select>
+        <p className="advisor-field__help">No model runs in this demo — the port result is scripted for the walk.</p>
       </div>
-      <TamperControls mode={tamperMode} onChange={onTamperModeChange} />
+      <details className="advisor-tamper-details">
+        <summary>Advanced: tamper with the continuation</summary>
+        <TamperControls mode={tamperMode} onChange={onTamperModeChange} />
+      </details>
       <button type="submit" className="button" disabled={disabled}>
         Send clarification
       </button>

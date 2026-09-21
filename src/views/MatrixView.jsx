@@ -3,6 +3,7 @@ import { isRegistryValid, resolveDirective } from '../domain/matrix.js';
 import { MatrixTable } from '../components/common/MatrixTable.jsx';
 import { MatrixControls } from '../components/matrix/MatrixControls.jsx';
 import { MatrixResultPanel } from '../components/matrix/MatrixResultPanel.jsx';
+import { DataState } from '../components/common/DataState.jsx';
 import { invalidCombinationRule } from '../components/matrix/matrixExplorerRules.js';
 
 const INITIAL_STATE = Object.freeze({
@@ -32,10 +33,11 @@ export function MatrixView() {
 
   return (
     <section aria-labelledby="matrix-heading">
-      <div className="page-header">
+      <div className="page-heading">
         <div>
-          <h1 id="matrix-heading">Outcome matrix</h1>
-          <p className="page-framing">
+          <span className="eyebrow">Understand</span>
+          <h1 id="matrix-heading" className="page-heading__title">Outcome matrix</h1>
+          <p className="page-heading__lede">
             Every registry-valid combination of route, participation, model result and whether ADVISE is allowed
             resolves to exactly one directive. Registry-invalid combinations are named, not silently resolved.
           </p>
@@ -52,11 +54,16 @@ export function MatrixView() {
       />
 
       <div aria-live="polite">
-        <MatrixResultPanel resolved={resolved} invalidRule={invalidRule} />
+        {resolved || invalidRule ? (
+          <MatrixResultPanel resolved={resolved} invalidRule={invalidRule} />
+        ) : (
+          <DataState tone="neutral">Choose a combination above to resolve a directive.</DataState>
+        )}
       </div>
 
-      <div className="panel matrix-explorer-table">
+      <div className="card matrix-explorer-table">
         <MatrixTable
+          density="full"
           firedRow={resolved?.row ?? null}
           highlightDescription="the row resolved for the current combination is marked"
         />

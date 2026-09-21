@@ -1,123 +1,42 @@
-/* The Decisions ledger: filter chips, the table, directive chips, and the
-   card layout it collapses into on narrow screens. */
-.filter-chips {
-  display: flex;
+/* The Decisions ledger: the directive-type filter (a `.segmented` group),
+   the `.data-table`-based ledger table, and the card layout it collapses
+   into on narrow screens. `.not-applicable` is a small shared utility (grey,
+   muted text) — Policies and Advisor also use it on the light canvas; the
+   dark-panel override lives in detail-fabric-face.css. */
+.not-applicable {
+  color: var(--color-ink-muted);
+}
+
+.decisions-filter {
   flex-wrap: wrap;
-  gap: var(--space-2);
 }
 
-.filter-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  border-radius: 999px;
-  border: 1px solid var(--color-border-strong);
-  background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-
-.filter-chip__count {
+.decisions-filter__count {
+  margin-left: var(--space-1);
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  color: var(--color-text-faint);
+  opacity: 0.8;
 }
 
-.filter-chip--active {
-  background: var(--color-surface-raised);
-  color: var(--color-text);
-  border-color: var(--color-accent);
-}
-
-.filter-chip--active .filter-chip__count {
-  color: var(--color-text);
-}
-
-.directive-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-3);
-  border-radius: 999px;
-  border: 1px solid transparent;
-  font-size: 0.8rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.directive-chip--activate-shard {
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
-  border-color: var(--color-success-text);
-}
-
-.directive-chip--advise {
-  background: var(--color-info-bg);
-  color: var(--color-info-text);
-  border-color: var(--color-info-text);
-}
-
-.directive-chip--request-input {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
-  border-color: var(--color-warning-text);
-}
-
-.decisions-table-wrap {
-  overflow-x: auto;
-  min-width: 0;
-}
-
-.decisions-table {
-  width: 100%;
-  min-width: 0;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-
-/* Six columns that fit. The long contract identifiers (persona policy, event
-   type) ride under the title as a meta line that may wrap anywhere, so the
-   table never needs a sideways scroll to show its last column. */
-
-.decisions-table th {
-  text-align: left;
-  padding: var(--space-3);
-  color: var(--color-text-muted);
-  font-weight: 600;
-  border-bottom: 1px solid var(--color-border);
-  white-space: nowrap;
-}
-
-.decisions-table td {
-  padding: var(--space-3);
-  border-bottom: 1px solid var(--color-border);
-  vertical-align: middle;
-}
-
-/* Only the short fixed-vocabulary columns hold one line: When, Directive,
-   Matrix row. Title, Model and Fabric result may wrap. */
-.decisions-table td:nth-child(1),
-.decisions-table td:nth-child(3),
-.decisions-table td:nth-child(4) {
-  white-space: nowrap;
-}
-
-/* The title column is the one place wrapping is correct: the scenario title
-   is prose, not a short fixed-vocabulary value. */
-/* No percentage width here: in auto table layout a 100% cell makes the table
-   as wide as itself PLUS every other column. The nowrap columns take their
-   content width and this one absorbs the rest. */
+/* ---------- Table ---------- */
 .decisions-table__title-cell {
   min-width: 18rem;
 }
 
-.decisions-table tbody tr {
-  cursor: pointer;
+.decisions-table__when,
+.decisions-table__matrix-row {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
 }
 
-.decisions-table tbody tr:hover {
-  background: var(--color-surface-raised);
+.decisions-table__model {
+  white-space: nowrap;
+}
+
+.decisions-table tbody tr {
+  cursor: pointer;
 }
 
 .decisions-table__row-button {
@@ -131,22 +50,34 @@
   font-weight: 600;
 }
 
+/* The long contract identifiers (persona policy, event type) ride under the
+   title as a meta line that may wrap anywhere, so the table never needs a
+   sideways scroll to show its last column. */
 .decisions-table__meta {
   display: block;
   margin-top: var(--space-1);
-  color: var(--color-text-muted);
+  color: var(--color-ink-muted);
   font-family: var(--font-mono);
   font-size: 0.78rem;
   overflow-wrap: anywhere;
 }
 
-.not-applicable {
-  color: var(--color-text-faint);
+.decisions-table__fabric-result {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
 }
 
-.matrix-row-tag {
-  font-family: var(--font-mono);
-  color: var(--color-text-muted);
+.decisions-table__dot {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+.decisions-table__dot--positive {
+  background: var(--color-positive);
 }
 
 /* ---------- Mobile: table becomes cards ---------- */
@@ -165,19 +96,10 @@
     left: -9999px;
   }
 
-  .decisions-table td:nth-child(n) {
-    white-space: normal;
-    min-width: 0;
-  }
-
-  .decisions-table tr {
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--space-3);
-    padding: var(--space-3);
-  }
-
   .decisions-table td {
+    min-width: 0;
+    white-space: normal;
+    height: auto;
     border-bottom: none;
     padding: var(--space-1) 0;
     display: flex;
@@ -186,11 +108,20 @@
     align-items: center;
   }
 
+  .decisions-table tr {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-3);
+    padding: var(--space-3);
+  }
+
   .decisions-table td::before {
     content: attr(data-label);
-    color: var(--color-text-faint);
-    font-size: 0.75rem;
+    flex: none;
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
   }
 }
