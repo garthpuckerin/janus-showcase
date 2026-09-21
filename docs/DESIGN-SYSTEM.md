@@ -170,6 +170,95 @@ Space `--space-1..6` = 0.25 / 0.5 / 0.75 / 1 / 1.5 / 2 rem. Radius
 - **Form controls** — surface, border-strong, radius sm, mono for values that
   are protocol identifiers.
 
+## The phone companion (a separate surface, not a breakpoint)
+
+> Owner, 2026-09-21: "why do you constantly force desktop layouts into a mobile
+> ratio and call that mobile-ready". The first phone view was the desktop
+> chrome stacked: toolbar, toggles and the whole sidebar filled the first
+> screen, content began 507px into a 664px viewport, the page ran 4,239px, and
+> 16 of 27 touch targets were under 44px. It passed the only check that
+> existed — "nothing is wider than the viewport" — which any desktop layout
+> that collapses to one column passes. That check is a FLOOR. It is never
+> evidence of a mobile design and must never be reported as one.
+
+**Start from the person, not the layout.** On a phone, someone responsible for
+this runtime does three things: sees what needs attention, reads the story of
+one decision, and walks the Advisor. They do not author policies, re-run a
+request against a different caller, or study an eleven-row table. The phone
+gets its own screens for those three jobs; everything else is a workstation
+surface and says so.
+
+Below 1024px (unless `?view=desktop`) the app renders the COMPANION SHELL —
+different components, not the desktop ones restyled:
+
+- **No sidebar. No desktop topbar.** A compact app bar (≤ 52px): the two-tone
+  glyph, the current screen's title, and one "More" button. Theme, density and
+  "Open the desktop layout" live in the More sheet, not on the bar.
+- **Bottom tab bar**, fixed, safe-area padded, four tabs with icon + label,
+  every target ≥ 44×44: **Attention · Decisions · Advisor · More**. The tab bar
+  owns the floor: no footer, nothing fixed above it except a screen's own
+  primary action.
+- **Attention** (phone-only, the home tab) — what needs a human: decisions
+  Fabric rejected, requests that failed closed before the matrix, requests
+  waiting on input. A derived header ("N of M need attention"), then cards
+  grouped by reason. Each card carries exactly: directive chip, title, one
+  mono line (policy ref · event), relative time, and THE reason in one line —
+  the verbatim rejection code, the failed check's name, or the requested
+  fields. When nothing needs attention the screen says so plainly. The
+  grouping is one pure function over the ledger, unit-tested.
+- **Decisions** — a feed of cards, newest first. Never a table on a phone.
+  The directive filter is a native `<select>`, never a scrolling pill strip.
+- **The decision story** (phone detail) — not the desktop page stacked. A
+  vertical stepper of the six stages with a left rule coloured by state and
+  each stage collapsed to its ONE derived status line; the stage that explains
+  the outcome (the failed check, the rejection, or the directive) is open by
+  default, the rest are `<details>`. A sticky mini-header keeps the title and
+  directive chip in view. **The two faces go full-bleed**: stages 01–04 on the
+  canvas, the seam as an edge-to-edge band, stages 05–06 on an edge-to-edge
+  dark panel — no cards nested in cards. Payload JSON sits behind
+  "Show DirectiveV2" / "Show TicketV2". No re-run controls: one line and a
+  link to the desktop layout.
+- **Advisor** — one step per screen, in order, with "Step N of 5" derived from
+  the walk state and the step's primary action pinned above the tab bar. The
+  continuation's "what it does not carry" list is the content of its own
+  step. Tamper controls stay behind "Advanced".
+- **More** — a sheet: Outcome matrix (as a LOOKUP: three native selects and
+  the checkbox → one result card; "all rows" as cards, fired row first),
+  theme, density, "Open the desktop layout", and the two workstation surfaces
+  (Policies, Boundary) listed with a "workstation" tag.
+- **Workstation-only**: Policies, Boundary, and every "Re-run with…" control.
+  Reaching one on a phone renders the desk-only state (shared `DataState`,
+  neutral): what it is, why it is a workstation surface, a link that switches
+  to `?view=desktop`, and a link back. `?view=desktop` persists for the
+  session and a "Back to the phone layout" link clears it.
+- 768–1023px is the companion shell with a two-column feed; ≥ 1024px is the
+  desktop shell.
+- No hover-only affordance. Every interactive target ≥ 44×44 CSS px. Body text
+  ≥ 15px, mono identifiers ≥ 13px, and an identifier never truncates — it
+  wraps.
+
+**The gate that replaces the overflow check as the mobile claim**
+(`scripts/mobile-sweep.mjs`, run on an emulated phone against the built app;
+a squeezed desktop layout must FAIL it):
+
+1. The desktop sidebar and desktop topbar are not rendered.
+2. The bottom tab bar is visible, fixed to the viewport bottom, and every tab
+   is ≥ 44×44.
+3. On every tab, the first real content (a card, a step, a result) starts in
+   the top 35% of the first screen.
+4. Every visible interactive target is ≥ 44×44 (an explicit, reviewed
+   allowlist for inline text links only).
+5. No `<table>` is rendered. No element is wider than the viewport. No
+   element scrolls sideways. The document is the only vertical scroller.
+6. The collapsed decision story is ≤ 3.5 viewports long; the Attention and
+   Decisions screens show at least two cards in the first screen.
+7. Each workstation-only route renders the desk-only state, and its link
+   reaches the desktop shell.
+8. The tour/onboarding's first spotlight lands on a visible phone element.
+
+Until that sweep exists and passes, nothing — commit message, status note or
+report — may describe the phone experience as ready, clean or done.
+
 ## Forbidden
 
 Violet, indigo or purple in any role. Gradients. Glow, blur or glass effects.
