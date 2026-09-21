@@ -364,7 +364,10 @@ async function runNormalSweep(browser) {
     const freshContext = await browser.newContext({ ...iphone });
     const freshPage = await freshContext.newPage();
     await freshPage.goto(`${BASE_URL}/?d=${encodeURIComponent(target.id)}`, { waitUntil: 'networkidle' });
-    await freshPage.waitForTimeout(200);
+    // Wait for the story itself, not a fixed delay: 200ms was enough standalone
+    // and not at the end of the chained `test:release` on a busy machine. If
+    // the story never opens this still fails, five seconds later.
+    await freshPage.locator('#story-heading').waitFor({ timeout: 5000 }).catch(() => {});
     const heading = (await freshPage.locator('#story-heading').count())
       ? await freshPage.locator('#story-heading').innerText()
       : null;

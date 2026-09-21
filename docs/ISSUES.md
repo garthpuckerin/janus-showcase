@@ -16,31 +16,45 @@ spotlight).
 
 ### ISSUE-004 · Release gate suite only partly ported
 **Found** 2026-09-19, updated 2026-09-21. **Visible:** no — latent. In place:
-`test:unit` (158), `lint`, `build`, `test:sweep:mobile` (47 checks + a
+`test:unit` (164), `lint`, `build`, `test:sweep:mobile` (47 checks + a
 `--self-test` proving it fails a forced desktop layout),
 `test:sweep:advisor-matrix` (49 checks, same self-test), a WCAG contrast test
 over the tokens for both themes, a colour-literal / gradient gate, an
 orphan-class gate and a scroll-container gate. STILL MISSING: axe-core WCAG
 A/AA e2e on rendered pages at desktop and phone (the contrast test covers
 token PAIRS, not what is actually rendered), the white-glove sweep (text
-defects + inert affordances), the viewport sweep, the data-coherence gate,
-`capture-og.mjs`, and one `test:release` that chains all of it — today the two
-phone sweeps are separate scripts and `test:release` runs only the first.
+defects + inert affordances), the data-coherence gate and `capture-og.mjs`.
+`test:release` now chains lint, build, unit and all three sweeps (mobile,
+advisor-matrix, viewport — 84 cell×screen checks).
 
-### ISSUE-006 · Tablet (768–1023px) has not been looked at
-**Found** 2026-09-21. **Visible:** unknown. The companion shell serves
-everything under 1024px and the feeds go two-column at 768px, but no tablet
-screen has been captured or reviewed, and neither sweep runs at a tablet
-viewport. The dreamcatcher cycle found four tablet-landscape bugs only after
-its reveal; do this before T-1.
+### ISSUE-008 · Companion debt measured against the shared benchmark
+**Found** 2026-09-21 by the five-showcase review
+(`portofolio-hub/docs/MOBILE_COMPANION_BENCHMARK.md`). **Visible:** yes, minor.
+(a) The desk-only states (Policies, Boundary) say why and offer the desktop,
+but carry no live count of what is waiting at the desk — Ops's does. (b) The
+viewport sweep checks shell, chrome, overflow and the way back in every cell,
+but does NOT yet assert that a desk-only route stays desk-only in every cell
+below the workstation tier — the exact defect found in Ops at 721–979px. Janus
+has one breakpoint shared by JS and CSS, so it is believed absent, not proven.
+(c) No phone-sized first run (ISSUE-003).
 
-### ISSUE-007 · The desktop forced onto a phone is unusable by design, but says nothing
-**Found** 2026-09-21. **Visible:** only after tapping "Open the desktop
-layout" on a phone. The escape hatch renders the full desktop shell in a
-phone viewport (that is what it is for), with a "Back to the phone layout"
-link in the topbar. It has not been checked that the link is reachable
-without sideways scrolling at 375px.
 ## Closed
+
+- 2026-09-21 · **ISSUE-006 · tablet had not been looked at.** Owner: "portrait
+  and landscape on both mobile and tablet need to be verified as well as full
+  desktop views on both". `scripts/viewport-sweep.mjs` now runs iPhone 13, iPad
+  Mini and iPad Pro 11 in portrait and landscape, each with the layout the app
+  chooses and with the desktop forced, plus 1280 and 1440 desktops — 12 cells ×
+  7 screens, a first-screen PNG per cell in `media/viewport/`. First run failed
+  45 of 84: fixed bars took 185px of a 342px landscape phone (tabs now move to
+  a side rail under 500px tall), and the ledger overflowed a landscape tablet
+  (columns fold at ≤1359px and ≤1100px).
+- 2026-09-21 · **ISSUE-007 · the desktop forced onto a phone.** It rendered
+  desktop components at 390px. It is now the real desktop laid out at 1280px
+  through the viewport meta and scaled to the screen, judged by DEVICE width
+  so the "Back to the phone layout" link stays visible; the sweep fails a
+  forced cell that lays out under 1024px or hides the way back. (Finance
+  Freedom had the viewport-meta technique first, `main.jsx`.)
 
 - 2026-09-21 · **ISSUE-001 · two tables scrolled sideways on phones.** No
   `<table>` renders on the companion at all now: the matrix is a lookup with

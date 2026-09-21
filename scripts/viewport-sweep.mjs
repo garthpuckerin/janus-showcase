@@ -89,10 +89,16 @@ async function waitForServer(url, timeoutMs = 20000) {
 function measure() {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
+  // Visible = a person could reach it by scrolling vertically: it must
+  // intersect the viewport horizontally. (The shared benchmark probe once
+  // counted a closed off-canvas drawer as visible; same rule here. Elements
+  // that start on screen and run past the right edge still count — that is
+  // exactly what the too-wide check below is for.)
   const visible = (el) => {
     const r = el.getBoundingClientRect();
     const s = getComputedStyle(el);
-    return r.width > 1 && r.height > 1 && s.visibility !== 'hidden' && s.display !== 'none';
+    return r.width > 1 && r.height > 1 && r.right > 1 && r.left < vw - 1
+      && s.visibility !== 'hidden' && s.display !== 'none';
   };
   const label = (el) => `${el.tagName.toLowerCase()}.${(typeof el.className === 'string' ? el.className : '').trim().split(/\s+/).slice(0, 2).join('.')}`;
 
