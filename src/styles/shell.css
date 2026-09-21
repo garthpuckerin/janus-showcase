@@ -180,7 +180,7 @@
 .app-main {
   grid-area: main;
   padding: var(--space-6) var(--page-gutter);
-  overflow-y: auto;
+  /* No overflow here: the document is the only scroller (see base.css). */
   min-width: 0;
 }
 
@@ -201,6 +201,19 @@
    a table or `<pre>` needs `min-width: 0` so it can shrink to the available
    width and let its own `overflow-x: auto` wrapper do the scrolling instead. */
 .app-main__inner > * {
+  min-width: 0;
+}
+
+/* Every view's root is a <section>: give them all the same vertical rhythm so
+   a heading never sits flush on the first card and bands never touch. (Found
+   on Boundary: the seam rule was drawn against the cards above it.) */
+.app-main__inner > section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.app-main__inner > section > * {
   min-width: 0;
 }
 

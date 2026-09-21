@@ -8,11 +8,11 @@
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
-  height: 100%;
-}
+/* The DOCUMENT scrolls — never the body or an inner wrapper. No fixed heights
+   here: `.app-shell` carries `min-height: 100vh`. (A `height: 100%` chain plus
+   an `overflow-x: hidden` guard once made <body> the scroll container: the
+   document reported 900px while the content was 1,876px, which clipped
+   full-page captures and is the nested scroll the mobile sweep forbids.) */
 
 body {
   margin: 0;

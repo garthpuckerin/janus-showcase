@@ -13,9 +13,3 @@
 @import './matrix.css';
 @import './policies.css';
 @import './boundary.css';
-
-/* Guard against horizontal page scroll on small phones (375px). */
-html,
-body {
-  overflow-x: hidden;
-}
