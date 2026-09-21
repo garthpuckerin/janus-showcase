@@ -30,4 +30,12 @@ export default [
       'no-console': 'error',
     },
   },
+  {
+    // The mobile-sweep script is CLI tooling, not app source — it reports
+    // its ✓/✗/PENDING lines to the terminal by design (build brief §F).
+    files: ['scripts/**/*.mjs'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
 ];

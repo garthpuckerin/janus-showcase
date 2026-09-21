@@ -10,8 +10,19 @@ const THEME_OPTIONS = [
 
 /** Page eyebrow + title left; the "Mock data" tag, a density toggle and a
  *  theme toggle right. Both toggles are real buttons with `aria-pressed`,
- *  labelled in text. */
-export function TopBar({ eyebrow, title, density, onDensityChange, theme, onThemeChange }) {
+ *  labelled in text. `showBackToPhone` is the single companion-shell
+ *  concession here: it only ever renders true when the desktop layout was
+ *  forced open on a viewport narrow enough to have a phone companion. */
+export function TopBar({
+  eyebrow,
+  title,
+  density,
+  onDensityChange,
+  theme,
+  onThemeChange,
+  showBackToPhone = false,
+  onBackToPhone,
+}) {
   return (
     <header className="app-topbar">
       <div className="app-topbar__heading">
@@ -19,6 +30,11 @@ export function TopBar({ eyebrow, title, density, onDensityChange, theme, onThem
         {title && <span className="app-topbar__title">{title}</span>}
       </div>
       <div className="app-topbar__actions">
+        {showBackToPhone && (
+          <button type="button" className="button button--ghost app-topbar__back-to-phone" onClick={onBackToPhone}>
+            Back to the phone layout
+          </button>
+        )}
         <span className="chip chip--neutral" role="status">
           Mock data · engine is private
         </span>

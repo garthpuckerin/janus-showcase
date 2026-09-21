@@ -1,0 +1,101 @@
+/* The More sheet: a bottom-sheet dialog. Its own `overflow-y: auto` is the
+   ONE legitimate nested scroller on the companion (a dialog, not a
+   page-level box — `tests/scrollContainer.test.js` only gates page-level
+   boxes) so long content still reaches every row rather than the body
+   being locked behind it. */
+
+.companion-sheet__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  background: color-mix(in srgb, var(--color-ink) 45%, transparent);
+}
+
+.companion-sheet {
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+  box-shadow: var(--shadow-float);
+  padding: var(--space-4);
+  padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .companion-sheet {
+    animation: companion-sheet-slide-in var(--duration-fast) ease-out;
+  }
+}
+
+@keyframes companion-sheet-slide-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.companion-sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.companion-sheet__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.companion-sheet__close:hover {
+  background: var(--color-surface-muted);
+}
+
+.companion-sheet__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Every row ≥48px tall. */
+.companion-sheet__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 3rem;
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-ink);
+  font-size: var(--text-base);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.companion-sheet__row:hover {
+  background: var(--color-surface-hover);
+}
+
+.companion-sheet__row--control {
+  cursor: default;
+}
+
+.companion-sheet__row--control .segmented button {
+  min-height: 2.75rem;
+}

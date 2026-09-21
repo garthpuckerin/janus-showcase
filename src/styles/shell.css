@@ -38,26 +38,11 @@
   padding: 0 var(--space-2);
 }
 
+/* Base glyph shape/colour lives in components.css (.glyph, shared with the
+   companion app bar); this just sets the wordmark's size. */
 .wordmark__glyph {
-  display: flex;
-  flex: none;
   width: 1.5rem;
   height: 1.5rem;
-  border-radius: var(--radius-xs);
-  overflow: hidden;
-  border: 1px solid var(--color-border-strong);
-}
-
-.wordmark__glyph-half {
-  flex: 1 1 50%;
-}
-
-.wordmark__glyph-half--light {
-  background: var(--color-surface);
-}
-
-.wordmark__glyph-half--dark {
-  background: var(--color-panel);
 }
 
 .wordmark__text {

@@ -192,8 +192,12 @@ Below 1024px (unless `?view=desktop`) the app renders the COMPANION SHELL —
 different components, not the desktop ones restyled:
 
 - **No sidebar. No desktop topbar.** A compact app bar (≤ 52px): the two-tone
-  glyph, the current screen's title, and one "More" button. Theme, density and
-  "Open the desktop layout" live in the More sheet, not on the bar.
+  glyph, the current screen's title, and the standing **"Mock data"** notice
+  (the desktop always shows it; the phone must too). No menu button on the
+  bar — the More tab owns that sheet, and two entry points to one sheet is
+  noise. Theme, density and "Open the desktop layout" live in the More sheet.
+- The active tab is ink at 600 under a 3px brass bar. The accent is never
+  text, on any surface.
 - **Bottom tab bar**, fixed, safe-area padded, four tabs with icon + label,
   every target ≥ 44×44: **Attention · Decisions · Advisor · More**. The tab bar
   owns the floor: no footer, nothing fixed above it except a screen's own

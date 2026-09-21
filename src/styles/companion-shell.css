@@ -1,0 +1,143 @@
+/* The phone/tablet companion shell: a compact app bar, scrolling content
+   (the document is the only scroller — see tests/scrollContainer.test.js;
+   `.companion-shell` is not in that gate's page-level list, so its
+   `min-height: 100vh` floor is fine, same as `.app-shell`), and a fixed
+   bottom tab bar. No sidebar, no desktop topbar — see docs/DESIGN-SYSTEM.md
+   "The phone companion". */
+
+.companion-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ---------- App bar (≤52px) ---------- */
+.companion-appbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: 3.25rem;
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-canvas);
+}
+
+.companion-appbar__glyph {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+.companion-appbar__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-weight: 700;
+  font-size: var(--text-lg);
+  color: var(--color-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.companion-appbar__notice {
+  flex: none;
+}
+
+/* ---------- Content ---------- */
+/* Bottom padding equal to the tab bar's own height plus its safe-area
+   inset, so the last card is never covered. No overflow declared here —
+   the document stays the only scroller. */
+.companion-shell__content {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-4) calc(3.75rem + env(safe-area-inset-bottom) + var(--space-4));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.companion-shell__content > * {
+  min-width: 0;
+}
+
+/* Every reused desktop control (Advisor's forms, Matrix's segmented
+   groups) is styled for a mouse-driven `--control-height` of 2.25rem. On
+   the companion every one of those must clear the 44×44 touch-target floor
+   regardless — scoped here so the desktop shell, which never carries this
+   class, is untouched. */
+.companion-shell__content .button,
+.companion-shell__content .segmented button,
+.companion-shell__content .field input,
+.companion-shell__content .field select,
+.companion-shell__content .field textarea {
+  min-height: 2.75rem;
+}
+
+.companion-shell__content summary {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
+/* ---------- Bottom tab bar ---------- */
+.companion-tabs {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.companion-tabs__tab {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  min-height: 3.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+}
+
+/* The accent is a rule, never text (contract): the active tab is ink at 600
+   under a 3px brass bar — the same marker the desktop nav uses on its left. */
+.companion-tabs__tab {
+  border-top: 3px solid transparent;
+}
+
+.companion-tabs__tab[aria-current='page'] {
+  color: var(--color-ink);
+  font-weight: 600;
+  border-top-color: var(--color-accent-line);
+}
+
+.companion-tabs__label {
+  font-size: var(--text-xs);
+}
+
+/* ---------- Desk-only state actions ---------- */
+.desk-only-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* 768–1023px: still the companion shell, just with more room — a two-column
+   feed instead of one (docs/DESIGN-SYSTEM.md). */
+@media (min-width: 768px) {
+  .companion-shell__content {
+    max-width: 48rem;
+  }
+}

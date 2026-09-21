@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { Shell } from './components/layout/Shell.jsx';
+import { CompanionShell } from './components/companion/CompanionShell.jsx';
 import { DecisionsView } from './views/DecisionsView.jsx';
 import { DecisionDetailView } from './views/DecisionDetailView.jsx';
 import { AdvisorView } from './views/AdvisorView.jsx';
@@ -8,6 +9,8 @@ import { PoliciesView } from './views/PoliciesView.jsx';
 import { BoundaryView } from './views/BoundaryView.jsx';
 import ErrorBoundary from './components/common/ErrorBoundary.jsx';
 import { useQueryParamState } from './hooks/useQueryParamState.js';
+import { useWorkstation } from './hooks/useWorkstation.js';
+import { resolveRoute } from './utils/surface.js';
 import { LEDGER } from './data/ledger.js';
 
 const NAV_GROUPS = [
@@ -39,8 +42,15 @@ function activeNavItem(view) {
 }
 
 export default function App() {
-  const [view, setView] = useQueryParamState('view', 'decisions');
+  const workstation = useWorkstation();
+  // The two shells default to different home screens (Decisions vs.
+  // Attention), so the fallback passed to the query-param hook depends on
+  // which one is rendering. `resolveRoute` then strips out the literal
+  // `desktop` layout switch, which the hook would otherwise hand back as if
+  // it were a route.
+  const [rawView, setView] = useQueryParamState('view', workstation.isWorkstation ? 'decisions' : 'attention');
   const [selectedId, setSelectedId] = useQueryParamState('d', null);
+  const view = resolveRoute({ rawView, fallback: workstation.isWorkstation ? 'decisions' : 'attention' });
 
   const selectedEntry = useMemo(
     () => LEDGER.find((entry) => entry.scenario.id === selectedId) ?? null,
@@ -56,6 +66,26 @@ export default function App() {
     },
     [setView, setSelectedId],
   );
+  const handleOpenDecision = useCallback(
+    (scenarioId) => {
+      setView('decisions');
+      setSelectedId(scenarioId);
+    },
+    [setView, setSelectedId],
+  );
+
+  if (!workstation.isWorkstation) {
+    return (
+      <CompanionShell
+        view={view}
+        selectedId={selectedId}
+        onNavigate={handleNavigate}
+        onOpenDecision={handleOpenDecision}
+        onCloseDecision={handleCloseDetail}
+        onForceDesktop={workstation.forceDesktop}
+      />
+    );
+  }
 
   const active = activeNavItem(view);
   const pageEyebrow = active?.group.label ?? null;
@@ -100,6 +130,8 @@ export default function App() {
 
   return (
     <Shell
+      showBackToPhone={workstation.forcedOnNarrowViewport}
+      onBackToPhone={workstation.clearForceDesktop}
       navGroups={NAV_GROUPS}
       activeView={view}
       onNavigate={handleNavigate}

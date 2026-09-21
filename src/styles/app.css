@@ -13,3 +13,7 @@
 @import './matrix.css';
 @import './policies.css';
 @import './boundary.css';
+@import './companion-shell.css';
+@import './companion-attention.css';
+@import './companion-feed.css';
+@import './companion-sheet.css';

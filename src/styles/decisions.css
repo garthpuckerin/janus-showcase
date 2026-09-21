@@ -23,6 +23,13 @@
   min-width: 18rem;
 }
 
+/* Ledger rows hold a title plus a wrapping two-line identifier, so they are
+   taller than --row-height: give them air instead of touching the hairlines. */
+.decisions-table td {
+  height: auto;
+  padding-block: var(--space-3);
+}
+
 .decisions-table__when,
 .decisions-table__matrix-row {
   font-family: var(--font-mono);

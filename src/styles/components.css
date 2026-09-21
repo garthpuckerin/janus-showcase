@@ -2,6 +2,28 @@
    (decisions.css, detail.css, advisor.css, matrix.css, policies.css,
    boundary.css) build on these classes; they do not redefine them. */
 
+/* ---------- Glyph (the two faces, shared by Wordmark and the companion
+   app bar — each sizes it with its own class on top of these) ---------- */
+.glyph {
+  display: flex;
+  flex: none;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+}
+
+.glyph__half {
+  flex: 1 1 50%;
+}
+
+.glyph__half--light {
+  background: var(--color-surface);
+}
+
+.glyph__half--dark {
+  background: var(--color-panel);
+}
+
 /* ---------- Card ---------- */
 .card,
 .panel {
@@ -182,6 +204,15 @@
   color: var(--color-neutral-text);
   background: var(--color-neutral-soft);
   border-color: color-mix(in srgb, var(--color-neutral-text) 35%, transparent);
+}
+
+/* The "row N" / "pre-matrix" tag that sits beside a directive chip. Shared, so
+   it lives here — it was once in a screen stylesheet and was lost with it. */
+.matrix-row-tag {
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Data table ---------- */

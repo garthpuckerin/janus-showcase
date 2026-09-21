@@ -1,0 +1,102 @@
+/* The phone-only home tab: a derived header, then cards grouped by why they
+   need a human. Grouping itself is `src/utils/attention.js` (unit-tested);
+   this is presentation only. */
+
+.attention-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.attention-view__heading {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.attention-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.attention-group__title {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.attention-group__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.attention-card {
+  margin: 0;
+}
+
+/* The whole card is one button, ≥72px tall (4.5rem) per the design
+   contract. */
+.attention-card__button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  width: 100%;
+  min-height: 4.5rem;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.attention-card__title {
+  font-weight: 600;
+  font-size: var(--text-md);
+}
+
+.attention-card__meta {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  overflow-wrap: anywhere;
+}
+
+.attention-card__time {
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+
+/* The reason is a protocol identifier (a rejection code, a check name, field
+   names) — mono, verbatim, wrapping. Tone follows what it IS: a Fabric
+   rejection is danger; a fail-closed or waiting request is warning. The group
+   heading already says which in words, so colour is never the only signal. */
+.attention-card__reason {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  color: var(--color-warning-text);
+}
+
+.attention-group[data-group='rejected'] .attention-card__reason {
+  color: var(--color-danger-text);
+}
+
+/* 768–1023px: a two-column feed (docs/DESIGN-SYSTEM.md). */
+@media (min-width: 768px) {
+  .attention-group__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
