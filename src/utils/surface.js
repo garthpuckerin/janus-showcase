@@ -49,6 +49,39 @@ export function resolveRoute({ rawView, fallback }) {
   return rawView;
 }
 
+/* ---------- The full desktop view on a small device ----------
+   "Open the desktop layout" on a phone or a portrait tablet must show the
+   REAL desktop: laid out at a desktop width and scaled to the screen, the way
+   a browser's "Request desktop site" works. The first version mounted the
+   desktop components at the device's own 390px, where the sidebar took the
+   full width and content began 534px down a 664px screen — a stacked reflow,
+   not the desktop. The layout width below is what the viewport meta is set to
+   while the desktop is forced on a narrow device. */
+export const FORCED_DESKTOP_LAYOUT_WIDTH = 1280;
+export const DEVICE_VIEWPORT_CONTENT = 'width=device-width, initial-scale=1.0, viewport-fit=cover';
+export const FORCED_DESKTOP_VIEWPORT_CONTENT = `width=${FORCED_DESKTOP_LAYOUT_WIDTH}, viewport-fit=cover`;
+
+/**
+ * The device's own width in CSS px for its CURRENT orientation — independent
+ * of the viewport meta, which is exactly what changes when the desktop is
+ * forced (after that, `innerWidth` reads 1280 on a phone).
+ * @param {{screenWidth: number, screenHeight: number, landscape: boolean}} input
+ */
+export function deviceWidth({ screenWidth, screenHeight, landscape }) {
+  if (!(screenWidth > 0) || !(screenHeight > 0)) return Number.POSITIVE_INFINITY;
+  return landscape ? Math.max(screenWidth, screenHeight) : Math.min(screenWidth, screenHeight);
+}
+
+/**
+ * Which viewport meta content applies: the desktop layout width only when the
+ * desktop is forced AND the device itself is narrower than a workstation.
+ * A real desktop (or a tablet in landscape) keeps the device viewport.
+ * @param {{forced: boolean, deviceWidthPx: number}} input
+ */
+export function viewportContentFor({ forced, deviceWidthPx }) {
+  return forced && !isWorkstationWidth(deviceWidthPx) ? FORCED_DESKTOP_VIEWPORT_CONTENT : DEVICE_VIEWPORT_CONTENT;
+}
+
 /* The two list screens a decision can be opened FROM on the phone. */
 const DECISION_HOST_VIEWS = Object.freeze(['attention', 'decisions']);
 

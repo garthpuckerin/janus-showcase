@@ -55,10 +55,6 @@
   max-width: 100%;
 }
 
-.rail-stage pre {
-  overflow-x: auto;
-}
-
 .rail-stage__heading {
   font-size: 0.8rem;
   font-weight: 700;
@@ -157,18 +153,6 @@
    side of the boundary they sit on (docs/DESIGN-SYSTEM.md "Payload block").
    `DirectiveStage` (shared with Advisor) still renders its own `pre`
    directly rather than the `Payload` component — see the handoff report. */
-.directive-json {
-  background: var(--color-panel);
-  color: var(--color-ink-inverse);
-  border: 1px solid var(--color-panel-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  overflow-x: auto;
-  white-space: pre;
-}
-
 @media (max-width: 768px) {
   .rail-row {
     grid-template-columns: minmax(0, 1fr);

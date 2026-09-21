@@ -38,8 +38,28 @@
   white-space: nowrap;
 }
 
-.decisions-table__model {
-  white-space: nowrap;
+/* Six columns need about 1,360px of viewport (content = viewport − sidebar −
+   gutters). Below that the Matrix-row and Model columns fold into a line under
+   the title. Measured before this rule: the table was 1,359px wide and
+   overflowed at 1280×800 and on every landscape tablet. */
+/* Two-class selectors so these beat `.decisions-table__meta { display: block }`
+   further down regardless of source order. */
+.decisions-table__meta.decisions-table__narrow-only {
+  display: none;
+}
+
+@media (max-width: 1359px) {
+  .decisions-table .decisions-table__wide-only {
+    display: none;
+  }
+
+  .decisions-table__meta.decisions-table__narrow-only {
+    display: block;
+  }
+
+  .decisions-table__title-cell {
+    min-width: 14rem;
+  }
 }
 
 .decisions-table tbody tr {

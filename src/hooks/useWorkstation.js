@@ -1,5 +1,25 @@
 import { useCallback, useEffect, useState } from 'react';
-import { isWorkstationWidth, resolveSurface, SURFACE_FORCE_VALUE, SURFACE_STORAGE_KEY } from '../utils/surface.js';
+import {
+  deviceWidth,
+  isWorkstationWidth,
+  resolveSurface,
+  SURFACE_FORCE_VALUE,
+  SURFACE_STORAGE_KEY,
+  viewportContentFor,
+} from '../utils/surface.js';
+
+/* The device's own width for its current orientation — NOT `innerWidth`,
+   which reads the forced desktop layout width once the viewport meta changes. */
+function readDeviceWidth() {
+  if (typeof window === 'undefined' || !window.screen) return Number.POSITIVE_INFINITY;
+  const landscape = window.matchMedia ? window.matchMedia('(orientation: landscape)').matches : false;
+  return deviceWidth({ screenWidth: window.screen.width, screenHeight: window.screen.height, landscape });
+}
+
+function applyViewportMeta(content) {
+  const meta = document.querySelector('meta[name="viewport"]');
+  if (meta && meta.getAttribute('content') !== content) meta.setAttribute('content', content);
+}
 
 function readStoredForce() {
   try {
@@ -58,15 +78,35 @@ export function useWorkstation() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const [devicePx, setDevicePx] = useState(readDeviceWidth);
+
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return undefined;
-    const mediaQueryList = window.matchMedia(MEDIA_QUERY);
-    const onChange = () => setWidth(window.innerWidth);
-    mediaQueryList.addEventListener('change', onChange);
-    return () => mediaQueryList.removeEventListener('change', onChange);
+    const widthQuery = window.matchMedia(MEDIA_QUERY);
+    const orientationQuery = window.matchMedia('(orientation: landscape)');
+    const onChange = () => {
+      setWidth(window.innerWidth);
+      setDevicePx(readDeviceWidth());
+    };
+    widthQuery.addEventListener('change', onChange);
+    orientationQuery.addEventListener('change', onChange);
+    return () => {
+      widthQuery.removeEventListener('change', onChange);
+      orientationQuery.removeEventListener('change', onChange);
+    };
   }, []);
 
   const isWorkstation = resolveSurface({ width, searchParams: currentSearchParams(), stored }) === 'workstation';
+  const forced = stored === SURFACE_FORCE_VALUE;
+
+  // The full desktop view on a small device is the REAL desktop, laid out at
+  // a desktop width and scaled to the screen (see utils/surface.js). Restored
+  // to the device viewport the moment the choice is cleared, or when the
+  // device turns to an orientation that is natively workstation-wide.
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    applyViewportMeta(viewportContentFor({ forced, deviceWidthPx: devicePx }));
+  }, [forced, devicePx]);
 
   const forceDesktop = useCallback(() => {
     writeStoredForce(SURFACE_FORCE_VALUE);
@@ -85,6 +125,9 @@ export function useWorkstation() {
     // "Back to the phone layout" (TopBar) only ever makes sense when the
     // desktop shell is on screen BECAUSE of a forced choice, not because the
     // viewport is natively wide.
-    forcedOnNarrowViewport: stored === SURFACE_FORCE_VALUE && !isWorkstationWidth(width),
+    // Judged by the DEVICE width (or a genuinely narrow window): once the
+    // desktop is forced on a phone, `innerWidth` reads the desktop layout
+    // width, and the way back must not disappear with it.
+    forcedOnNarrowViewport: forced && (!isWorkstationWidth(devicePx) || !isWorkstationWidth(width)),
   };
 }

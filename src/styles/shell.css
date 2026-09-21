@@ -202,51 +202,9 @@
   min-width: 0;
 }
 
-@media (max-width: 768px) {
-  .app-shell {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto 1fr;
-    grid-template-areas:
-      'topbar'
-      'sidebar'
-      'main';
-  }
-
-  .app-sidebar {
-    position: static;
-    height: auto;
-    overflow-y: visible;
-    border-right: none;
-    border-bottom: 1px solid var(--color-border);
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    padding: var(--space-3);
-  }
-
-  .app-sidebar__nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    overflow: visible;
-  }
-
-  .nav-group {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .nav-group__label {
-    margin: 0 var(--space-2) 0 0;
-  }
-
-  .app-topbar {
-    flex-wrap: wrap;
-    height: auto;
-    padding: var(--space-3);
-  }
-
-  .app-main {
-    padding: var(--space-4);
-  }
-}
+/* No narrow-width rules here on purpose. The desktop shell is only ever laid
+   out at >= 1024px: natively, or at the forced 1280px layout width when a
+   phone or portrait tablet asks for the full desktop view (utils/surface.js).
+   Below that the app mounts the companion shell instead - different
+   components, not these ones stacked. A block that stacked the sidebar across
+   the full width at <= 768px used to live here; it WAS the squeezed desktop. */

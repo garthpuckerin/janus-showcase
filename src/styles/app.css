@@ -18,3 +18,5 @@
 @import './companion-feed.css';
 @import './companion-sheet.css';
 @import './companion-story.css';
+/* Last on purpose: short-landscape overrides for every companion stylesheet. */
+@import './companion-landscape.css';

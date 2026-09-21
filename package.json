@@ -13,6 +13,7 @@
     "test:unit": "node --test",
     "test:sweep:mobile": "node scripts/mobile-sweep.mjs",
     "test:sweep:advisor-matrix": "node scripts/sweep-advisor-matrix.mjs",
+    "test:sweep:viewport": "node scripts/viewport-sweep.mjs",
     "test:release": "npm run lint && npm run build && npm run test:unit && npm run test:sweep:mobile"
   },
   "dependencies": {

@@ -29,6 +29,21 @@
         var density = pick(stored('janus:density'), ['comfortable', 'dense']);
         if (theme) root.setAttribute('data-theme', theme);
         if (density) root.setAttribute('data-density', density);
+
+        /* The full desktop view on a small device is the REAL desktop, laid
+           out at 1280 and scaled to the screen. Mirrors utils/surface.js
+           (viewportContentFor); the hook re-applies it on mount. */
+        var view = null;
+        try { view = new URLSearchParams(window.location.search).get('view'); } catch (e) { view = null; }
+        var forced = view === 'desktop' || stored('janus:surface') === 'desktop';
+        var landscape = window.matchMedia ? window.matchMedia('(orientation: landscape)').matches : false;
+        var sw = window.screen ? window.screen.width : 0;
+        var sh = window.screen ? window.screen.height : 0;
+        var device = sw > 0 && sh > 0 ? (landscape ? Math.max(sw, sh) : Math.min(sw, sh)) : Infinity;
+        if (forced && device < 1024) {
+          var meta = document.querySelector('meta[name="viewport"]');
+          if (meta) meta.setAttribute('content', 'width=1280, viewport-fit=cover');
+        }
       })();
     </script>
   </head>

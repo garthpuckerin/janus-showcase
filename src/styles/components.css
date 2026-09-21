@@ -319,8 +319,10 @@
   background: var(--color-panel);
   color: var(--color-ink-inverse);
   font-size: var(--text-xs);
-  overflow-x: auto;
-  white-space: pre;
+  /* Wraps on every surface: JSON lines are short and a long value (an email,
+     an id) should fold, not make the block a second, sideways scroller. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 /* ---------- Data state (empty / loading / error / not-applicable) ---------- */

@@ -33,8 +33,8 @@ export function DecisionsTable({ rows, now, onSelectScenario }) {
             <th scope="col">When</th>
             <th scope="col">Decision · persona policy · event</th>
             <th scope="col">Directive</th>
-            <th scope="col">Matrix row</th>
-            <th scope="col">Model</th>
+            <th scope="col" className="decisions-table__wide-only">Matrix row</th>
+            <th scope="col" className="decisions-table__wide-only">Model</th>
             <th scope="col">Fabric result</th>
           </tr>
         </thead>
@@ -64,14 +64,28 @@ export function DecisionsTable({ rows, now, onSelectScenario }) {
                     <span className="visually-hidden">, event </span>
                     {scenario.request.event.type}
                   </span>
+                  {/* Below 1360px the Matrix-row and Model columns fold into
+                      this line, so the ledger fits a laptop and a landscape
+                      tablet with four columns instead of overflowing with six. */}
+                  <span className="decisions-table__meta decisions-table__narrow-only">
+                    <span className="visually-hidden">Matrix row </span>
+                    {evaluation.diagnostics.matrix_row === null ? 'pre-matrix' : `row ${evaluation.diagnostics.matrix_row}`}
+                    <span aria-hidden="true"> · </span>
+                    <span className="visually-hidden">, model </span>
+                    {modelStatusLabel(evaluation.diagnostics.model_status)}
+                  </span>
                 </td>
                 <td data-label="Directive">
                   <DirectiveChip type={evaluation.directive.type} />
                 </td>
-                <td data-label="Matrix row" className="decisions-table__matrix-row">
+                <td data-label="Matrix row" className="decisions-table__matrix-row decisions-table__wide-only">
                   {evaluation.diagnostics.matrix_row === null ? 'pre-matrix' : `row ${evaluation.diagnostics.matrix_row}`}
                 </td>
-                <td data-label="Model" title={evaluation.diagnostics.model_status} className="decisions-table__model">
+                <td
+                  data-label="Model"
+                  title={evaluation.diagnostics.model_status}
+                  className="decisions-table__wide-only"
+                >
                   {modelStatusLabel(evaluation.diagnostics.model_status)}
                 </td>
                 <td data-label="Fabric result">

@@ -1,0 +1,71 @@
+/* The companion in a SHORT landscape viewport — a phone turned sideways.
+   Imported last so it overrides the portrait rules without specificity games.
+
+   Measured on an emulated iPhone 13 in landscape (750×342): the app bar, the
+   bottom tab bar and the wizard's pinned action bar together took 185px of a
+   342px-tall screen, leaving 46% for content. Height is the scarce axis here
+   and width is not, so the chrome moves to where there is room:
+     - the tab bar becomes a slim rail down the left edge;
+     - the app bar drops to 44px;
+     - the wizard's primary action stops being pinned and sits at the end of
+       its step (a fixed bar is a luxury a 342px screen cannot afford).
+   A tablet in landscape is >= 1024px wide and gets the desktop shell, so this
+   only ever applies to phones. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .companion-shell {
+    --companion-rail: 4.5rem;
+    padding-left: calc(var(--companion-rail) + env(safe-area-inset-left));
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .companion-appbar {
+    height: 2.75rem;
+  }
+
+  .companion-tabs {
+    top: 0;
+    right: auto;
+    bottom: 0;
+    width: calc(var(--companion-rail, 4.5rem) + env(safe-area-inset-left));
+    flex-direction: column;
+    padding-bottom: 0;
+    padding-left: env(safe-area-inset-left);
+    border-top: 0;
+    border-right: 1px solid var(--color-border);
+  }
+
+  /* Same marker, turned with the bar: ink at 600 beside a 3px brass rule. */
+  .companion-tabs__tab {
+    min-height: 2.75rem;
+    border-top: 0;
+    border-left: 3px solid transparent;
+  }
+
+  .companion-tabs__tab[aria-current='page'] {
+    border-top-color: transparent;
+    border-left-color: var(--color-accent-line);
+  }
+
+  /* Nothing sits along the bottom any more, so nothing needs clearing there. */
+  .companion-shell__content {
+    max-width: none;
+    padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  }
+
+  .story__header,
+  .matrix-lookup__dock {
+    top: 2.75rem;
+  }
+
+  .advisor-wizard {
+    padding-bottom: 0;
+  }
+
+  .wizard-actionbar {
+    position: static;
+    height: auto;
+    padding: var(--space-3) 0 0;
+    border-top: 1px solid var(--color-border);
+    background: transparent;
+  }
+}

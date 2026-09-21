@@ -21,7 +21,11 @@
   min-width: 0;
 }
 
-@media (min-width: 1100px) {
+/* Two columns only when each can hold the eleven-row matrix table without
+   overflowing: at 1100px it spilled 4px at 1280 and 47px on a landscape
+   tablet. Content width = viewport − 236px sidebar − gutters, so two readable
+   columns need about 1400px of viewport. */
+@media (min-width: 1400px) {
   .detail-janus-face {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: repeat(2, auto);
