@@ -29,6 +29,14 @@ below the workstation tier — the exact defect found in Ops at 721–979px. Jan
 has one breakpoint shared by JS and CSS, so it is believed absent, not proven.
 (c) CLOSED 09-21 — the phone-sized first run exists (ISSUE-003).
 
+### ISSUE-009 · Authority-in-every-cell check is not in the sweep
+**Found** 2026-09-21 (benchmark Janus item 4), filed 2026-10-20. **Visible:** no,
+latent. The benchmark gate requires every desk-only route to stay desk-only in
+every cell below the workstation tier, including the landscape gap band. Janus
+shares one breakpoint between JS and CSS, so the Ops defect is believed absent,
+not proven. Same check as ISSUE-008(b); this entry makes it a named deliverable
+of the shared-gate phase.
+
 ## Closed
 
 - 2026-09-21 · **What the new gates found on their first run** (axe: 4
